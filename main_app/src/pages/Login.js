@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import Validation from '../modules/validation/LoginValidation'
+import Validation from '../modules/validation/LoginValidation';
 import axios from 'axios';
 
 function Login() {
@@ -11,10 +11,12 @@ function Login() {
     });
 
     const [errors, setErrors] = useState({});
+    const [serverError, setServerError] = useState(''); // Новое состояние для ошибок сервера
     const navigation = useNavigate();
 
     const handleInput = (event) => {
-        setValues(prev => ({ ...prev, [event.target.name]: event.target.value })); 
+        setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
+        setServerError('');
     };
 
     const handleSubmit = async (event) => {
@@ -27,16 +29,20 @@ function Login() {
             try {
                 const response = await axios.post("http://localhost:8081/login", values);
                 console.log("Response status:", response.status);
+                
                 if (response.status === 200) {
                     console.log("Successful login:", response.data);
                     navigation("/");
-                } else if (response.status === 201){
+                } else if (response.status === 201) {
                     console.log("Login failed (email):", response);
-                } else if (response.status === 202){
+                    setServerError("Incorrect email or password.");
+                } else if (response.status === 202) {
                     console.log("Login failed (password):", response);
+                    setServerError("Incorrect email or password."); 
                 }
             } catch (err) {
                 console.error("Error with login request:\n", err);
+                setServerError("An error occurred during login. Please try again."); // Обработка других ошибок
             }
         }
     };
@@ -59,6 +65,7 @@ function Login() {
                         <input type='password' name='password' placeholder='Enter Password'
                             onChange={handleInput} className='form-control'></input>
                         {errors.password && <span className='text-danger'> {errors.password} </span>}
+                        {serverError && <span className='text-danger'> {serverError} </span>} {/* Отображение серверной ошибки */}
                     </div>
 
                     <div className='d-flex justify-content-between mt-4'>
@@ -71,4 +78,4 @@ function Login() {
     )
 }
 
-export default Login
+export default Login;

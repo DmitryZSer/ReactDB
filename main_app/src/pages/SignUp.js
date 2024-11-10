@@ -12,23 +12,31 @@ function SignUp() {
     });
 
     const [errors, setErrors] = useState({});
-    
+    const [serverError, setServerError] = useState(''); // Новое состояние для ошибок сервера
+    const navigation = useNavigate();
+
     const handleInput = (event) => {
         setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
+        setServerError('');
     };
-    
-    const navigation = useNavigate();
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
+
         const validationErrors = Validation(values);
-        setErrors(validationErrors); 
-        
+        setErrors(validationErrors);
+
         if (Object.keys(validationErrors).length === 0) {
             try {
-                const response = await axios.post("http://localhost:8081/signup",  values);
-                console.log("Success registration:\n", response);
-                navigation("/")
+                const response = await axios.post("http://localhost:8081/signup", values);
+
+                if (response.status === 200) {
+                    console.log("Successful registration:", response.data);
+                    navigation("/");
+                } else if (response.status === 201) {
+                    console.log("Registration failed (email):", response);
+                    setServerError("Incorrect email.");
+                }
             } catch (err) {
                 console.error("Error with registration request:\n", err);
             }
@@ -40,7 +48,7 @@ function SignUp() {
             <div className='p-5 bg-white rounded shadow-lg' style={{ width: '400px' }}>
                 <form action='' onSubmit={handleSubmit}>
                     <h2 className='mb-4 text-center'>Registration</h2>
-                    
+
                     <div className='mb-3'>
                         <label htmlFor='name' className='d-block text-start'><strong>Name</strong></label>
                         <input type='text' name='name' placeholder='Enter Name'
@@ -53,6 +61,7 @@ function SignUp() {
                         <input type='email' name='email' placeholder='Enter Email'
                             onChange={handleInput} className='form-control'></input>
                         {errors.email && <span className='text-danger'> {errors.email} </span>}
+                        {serverError && <span className='text-danger'> {serverError} </span>} {/* Отображение серверной ошибки */}
                     </div>
 
                     <div className='mb-3'>
