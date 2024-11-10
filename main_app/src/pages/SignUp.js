@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Validation from '../modules/InputValidation';
 import axios from 'axios';
 
@@ -10,34 +11,39 @@ function SignUp() {
         password: ''
     });
 
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState({});
+    
     const handleInput = (event) => {
         setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
     };
     
-
-    const handleSubmit = (event) => {
+    const navigation = useNavigate();
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        setErrors(Validation(values));
         
-        if (errors.name === '' && errors.email === '' && errors.password === '') {            axios.post("http://localhost:8081/reactdb", values)
-                .then(res => {
-                    console.log(res);
-                })
-                .catch(err => console.log(err));
+        const validationErrors = Validation(values);
+        setErrors(validationErrors); 
+        
+        // Если ошибок нет, отправляем запрос
+        if (Object.keys(validationErrors).length === 0) {
+            try {
+                const response = await axios.post("http://localhost:8081/reactdb",  values);
+                console.log("Success registration:\n" ,response);
+                navigation("/")
+            } catch (err) {
+                console.log("Error with registration:\n" ,err);
+            }
         }
     };
-    
-    
 
     return (
         <div className='d-flex vh-100 justify-content-center align-items-center bg-primary'>
             <div className='p-3 bg-white w-25'>
                 <h2>Registration</h2>
-                <form action=''  onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
                     <div className='mb-3'>
                         <label htmlFor='name'><strong>Name</strong></label>
-                        <input type='name' name='name' placeholder='Enter Name'
+                        <input type='text' name='name' placeholder='Enter Name'
                             onChange={handleInput} className='form-control'></input>
                         {errors.name && <span className='text-danger'> {errors.name} </span>}
                     </div>
@@ -50,7 +56,7 @@ function SignUp() {
                     </div>
 
                     <div className='mb-3'>
-                        <label label htmlFor='password'><strong>Password</strong></label>
+                        <label htmlFor='password'><strong>Password</strong></label>
                         <input type='password' name='password' placeholder='Enter Password'
                             onChange={handleInput} className='form-control'></input>
                         {errors.password && <span className='text-danger'> {errors.password} </span>}
@@ -58,7 +64,7 @@ function SignUp() {
 
                     <div className='mb-2'>
                         <button type='submit' className="btn m-2 btn-success">Sign up</button>
-                        <Link to='/' className='btn btn-default border w-60 bg-light'>Back to login</Link>
+                        <Link to='/Login' className='btn btn-default border w-60 bg-light'>Back to login</Link>
                     </div>
                 </form>
             </div>
@@ -66,4 +72,4 @@ function SignUp() {
     )
 }
 
-export default SignUp
+export default SignUp;
