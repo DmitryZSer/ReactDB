@@ -14,19 +14,69 @@ const db = mysql.createConnection({
     database: "reactdb"
 });
 
-app.post('/reactdb', (req, res) => {
-    const { name, email, password } = req.body;
-    const sql = "INSERT INTO users (Name, Email, Password) VALUES (?, ?, ?)";
+const bcrypt = require('bcrypt');
 
-    db.query(sql, [name, email, password], (err, result) => {
+app.post('/signup', (req, res) => {
+    const { name, email, password } = req.body;
+
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
         if (err) {
-            console.error("Error inserting data: ", err); // Логгирование ошибки
+            console.error("Error hashing password: ", err);
             return res.status(500).json({ message: "Internal Server Error", error: err });
         }
-        return res.status(200).json({ message: "User registered successfully", data: result });
+
+        const sql = "INSERT INTO users (Name, Email, Password) VALUES (?, ?, ?)";
+        
+        db.query(sql, [name, email, hashedPassword], (err, result) => {
+            if (err) {
+                console.error("Error inserting data: ", err);
+                return res.status(500).json({ message: "Internal Server Error", error: err });
+            }
+            return res.status(200).json({ message: "User registered successfully", data: result });
+        });
     });
 });
 
+app.post('/login', (req, res) => {
+    const { email, password } = req.body;
+
+    // Проверяем, существует ли пользователь с таким email
+    const sql = "SELECT * FROM users WHERE Email = ?";
+    
+    db.query(sql, [email], (err, result) => {
+        if (err) {
+            console.error("Error querying data: ", err);
+            return res.status(500).json({ message: "Internal Server Error", error: err });
+        }
+        
+        // Если пользователь не найден
+        if (result.length === 0) {
+            return res.status(201).json({ message: "Invalid email or password" });
+        }
+
+        // Пользователь найден, проверяем пароль
+        const user = result[0];
+
+        // Сравниваем введенный пароль с сохраненным в базе данных (хэшированным)
+        bcrypt.compare(password, user.Password, (err, isMatch) => {
+            if (err) {
+                console.error("Error comparing passwords: ", err);
+                return res.status(500).json({ message: "Internal Server Error", error: err });
+            }
+
+            if (isMatch) {
+                // Пароль совпадает, авторизация успешна
+                return res.status(200).json({ message: "Login successful", userId: user.ID });
+            } else {
+                // Пароль неверный
+                return res.status(202).json({ message: "Invalid email or password" });
+            }
+        });
+    });
+});
+
+
+
 app.listen(8081, () => {
-    console.log("Listening blyatb...")
+    console.log("Listening slyshayu...")
 })

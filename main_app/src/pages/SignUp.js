@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import Validation from '../modules/InputValidation';
+import Validation from '../modules/validation/SignUpValidation';
 import axios from 'axios';
 
 function SignUp() {
@@ -24,14 +24,13 @@ function SignUp() {
         const validationErrors = Validation(values);
         setErrors(validationErrors); 
         
-        // Если ошибок нет, отправляем запрос
         if (Object.keys(validationErrors).length === 0) {
             try {
-                const response = await axios.post("http://localhost:8081/reactdb",  values);
-                console.log("Success registration:\n" ,response);
+                const response = await axios.post("http://localhost:8081/signup",  values);
+                console.log("Success registration:\n", response);
                 navigation("/")
             } catch (err) {
-                console.log("Error with registration:\n" ,err);
+                console.error("Error with registration request:\n", err);
             }
         }
     };

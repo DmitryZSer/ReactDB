@@ -1,22 +1,45 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Validation from '../modules/InputValidation'
+import { useNavigate } from 'react-router-dom';
+import Validation from '../modules/validation/LoginValidation'
+import axios from 'axios';
 
 function Login() {
     const [values, setValues] = useState({
         email: '',
         password: ''
-    })
+    });
 
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState({});
+    const navigation = useNavigate();
+
     const handleInput = (event) => {
-        setValues(prev => ({ ...prev, [event.target.name]: [event.target.value] }))
-    }
+        setValues(prev => ({ ...prev, [event.target.name]: event.target.value })); 
+    };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        setErrors(Validation(values));
-    }
+        
+        const validationErrors = Validation(values);
+        setErrors(validationErrors); 
+        
+        if (Object.keys(validationErrors).length === 0) {
+            try {
+                const response = await axios.post("http://localhost:8081/login", values);
+                console.log("Response status:", response.status);
+                if (response.status === 200) {
+                    console.log("Successful login:", response.data);
+                    navigation("/");
+                } else if (response.status === 201){
+                    console.log("Login failed (email):", response);
+                } else if (response.status === 202){
+                    console.log("Login failed (password):", response);
+                }
+            } catch (err) {
+                console.error("Error with login request:\n", err);
+            }
+        }
+    };
 
     return (
         <div className='d-flex vh-100 justify-content-center align-items-center bg-primary'>

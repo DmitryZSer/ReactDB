@@ -15,7 +15,7 @@ function Validation(values) {
     //     error.email = "Email didn't match the format";
     // }
 
-    if (!values.password) {
+    if (!values.password.trim()) {
         error.password = "Password should not be empty";
     }
     // else if (!password_pattern.test(values.password)) {
