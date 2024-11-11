@@ -1,0 +1,26 @@
+-- Table for storing articles
+CREATE TABLE articles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    summary TEXT, -- Short description field
+    content TEXT NOT NULL,
+    author_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Table for storing tags
+CREATE TABLE tags (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) UNIQUE NOT NULL -- Tag name must be unique
+);
+
+-- Junction table to establish many-to-many relationship between articles and tags
+CREATE TABLE article_tags (
+    article_id INT,
+    tag_id INT,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (article_id, tag_id) -- Composite key to prevent duplicate associations
+);

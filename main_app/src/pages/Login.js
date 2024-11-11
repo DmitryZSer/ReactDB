@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Validation from '../modules/validation/LoginValidation';
 import axios from 'axios';
 
-function Login() {
+export default function Login() {
     const [values, setValues] = useState({
         email: '',
         password: ''
@@ -35,14 +35,14 @@ function Login() {
                     navigation("/");
                 } else if (response.status === 201) {
                     console.log("Login failed (email):", response);
-                    setServerError("Incorrect email or password.");
+                    setServerError("Указана неправильная почта или пароль.");
                 } else if (response.status === 202) {
                     console.log("Login failed (password):", response);
-                    setServerError("Incorrect email or password."); 
+                    setServerError("Указана неправильная почта или пароль.");
                 }
             } catch (err) {
                 console.error("Error with login request:\n", err);
-                setServerError("An error occurred during login. Please try again."); // Обработка других ошибок
+                setServerError("Возникла ошибка на сервере. Повторите ошибку позднее."); // Обработка других ошибок
             }
         }
     };
@@ -51,17 +51,17 @@ function Login() {
         <div className='d-flex vh-100 justify-content-center align-items-center bg-primary'>
             <div className='p-5 bg-white rounded shadow-lg' style={{ width: '400px' }}>
                 <form action='' onSubmit={handleSubmit}>
-                    <h2 className='mb-4 text-center'>Login</h2>
+                    <h2 className='mb-4 text-center'>Авторизация</h2>
 
                     <div className='mb-3'>
-                        <label htmlFor='email' className='d-block text-start'><strong>Email</strong></label>
+                        <label htmlFor='email' className='d-block text-start'><strong>Почта</strong></label>
                         <input type='email' name='email' placeholder='Enter Email'
                             onChange={handleInput} className='form-control'></input>
                         {errors.email && <span className='text-danger'> {errors.email} </span>}
                     </div>
 
                     <div className='mb-3'>
-                        <label htmlFor='password' className='d-block text-start'><strong>Password</strong></label>
+                        <label htmlFor='password' className='d-block text-start'><strong>Пароль</strong></label>
                         <input type='password' name='password' placeholder='Enter Password'
                             onChange={handleInput} className='form-control'></input>
                         {errors.password && <span className='text-danger'> {errors.password} </span>}
@@ -69,13 +69,11 @@ function Login() {
                     </div>
 
                     <div className='d-flex justify-content-between mt-4'>
-                        <button type='submit' className="btn btn-success">Login</button>
-                        <Link to="/SignUp" className='btn btn-secondary'>Create Account</Link>
+                        <button type='submit' className="btn btn-success">Войти</button>
+                        <Link to="/SignUp" className='btn btn-secondary'>Зарегестрироваться</Link>
                     </div>
                 </form>
             </div>
         </div>
     )
 }
-
-export default Login;
