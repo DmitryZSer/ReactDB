@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Validation from '../modules/validation/LoginValidation';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export default function Login() {
-    const [values, setValues] = useState({
-        email: '',
-        password: ''
-    });
-
+    const [values, setValues] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState({});
-    const [serverError, setServerError] = useState(''); // Новое состояние для ошибок сервера
-    const navigation = useNavigate();
+    const [serverError, setServerError] = useState('');
+    const navigate = useNavigate();
 
     const handleInput = (event) => {
-        setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
+        setValues({ ...values, [event.target.name]: event.target.value });
         setServerError('');
     };
 
@@ -28,21 +24,17 @@ export default function Login() {
         if (Object.keys(validationErrors).length === 0) {
             try {
                 const response = await axios.post("http://localhost:8081/login", values);
-                console.log("Response status:", response.status);
-                
+
                 if (response.status === 200) {
-                    console.log("Successful login:", response.data);
-                    navigation("/");
-                } else if (response.status === 201) {
-                    console.log("Login failed (email):", response);
-                    setServerError("Указана неправильная почта или пароль.");
-                } else if (response.status === 202) {
-                    console.log("Login failed (password):", response);
-                    setServerError("Указана неправильная почта или пароль.");
+                    console.log("Login token:", response.data.token)
+                    Cookies.set('auth_token', response.data.token);
+                    navigate("/");
+                } else {
+                    setServerError("Invalid email or password.");
                 }
             } catch (err) {
-                console.error("Error with login request:\n", err);
-                setServerError("Возникла ошибка на сервере. Повторите ошибку позднее."); // Обработка других ошибок
+                console.error("Login error:", err);
+                setServerError("Server error. Please try again later.");
             }
         }
     };

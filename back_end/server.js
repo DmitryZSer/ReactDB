@@ -1,11 +1,15 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 const db = mysql.createConnection({
     host: "localhost",
@@ -14,12 +18,11 @@ const db = mysql.createConnection({
     database: "reactdb"
 });
 
-const bcrypt = require('bcrypt');
+const JWT_SECRET = 'zRKIWr7z2uoKrBtUJ2LFceOB-dslR9ZTzHjNghIo5ZY';
 
 app.post('/signup', (req, res) => {
     const { name, email, password } = req.body;
 
-    // Проверяем, существует ли пользователь с таким email
     const sqlCheckEmail = "SELECT * FROM users WHERE email = ?";
     db.query(sqlCheckEmail, [email], (err, result) => {
         if (err) {
@@ -32,7 +35,6 @@ app.post('/signup', (req, res) => {
             return res.status(201).json({ message: "Invalid email" });
         }
 
-        // Если email уникальный, хешируем пароль и добавляем нового пользователя
         bcrypt.hash(password, 10, (err, hashedPassword) => {
             if (err) {
                 console.error("Error hashing password: ", err);
@@ -52,27 +54,23 @@ app.post('/signup', (req, res) => {
 });
 
 
+// Логин пользователя
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    // Проверяем, существует ли пользователь с таким email
     const sql = "SELECT * FROM users WHERE email = ?";
-
     db.query(sql, [email], (err, result) => {
         if (err) {
             console.error("Error querying data: ", err);
             return res.status(500).json({ message: "Internal Server Error", error: err });
         }
 
-        // Если пользователь не найден
         if (result.length === 0) {
-            return res.status(201).json({ message: "Invalid email or password" });
+            return res.status(400).json({ message: "Invalid email or password" });
         }
 
-        // Пользователь найден, проверяем пароль
         const user = result[0];
 
-        // Сравниваем введенный пароль с сохраненным в базе данных (хэшированным)
         bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) {
                 console.error("Error comparing passwords: ", err);
@@ -80,17 +78,37 @@ app.post('/login', (req, res) => {
             }
 
             if (isMatch) {
-                // Пароль совпадает, авторизация успешна
-                return res.status(200).json({ message: "Login successful", userId: user.ID });
+                const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
+
+                //res.cookie('auth_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 3600000 });
+
+                return res.status(200).json({
+                    message: "Login successful",
+                    token: token
+                });
             } else {
-                // Пароль неверный
-                return res.status(202).json({ message: "Invalid email or password" });
+                return res.status(400).json({ message: "Invalid email or password" });
             }
         });
     });
 });
 
-// Fetch all tags with their associated articles
+app.get('/verify-token', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+        return res.status(401).json({ message: "No token provided" });
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: "Invalid token" });
+        }
+        
+        res.status(200).json({ user: { id: decoded.id, name: decoded.name, email: decoded.email } });
+    });
+});
+
 app.get('/tags', (req, res) => {
     const sqlTags = `
         SELECT t.id, t.name, a.id AS article_id, a.title, a.summary
@@ -106,7 +124,6 @@ app.get('/tags', (req, res) => {
             return res.status(500).json({ message: "Internal Server Error" });
         }
 
-        // Organize results into tags with associated articles
         const tagsWithArticles = result.reduce((acc, row) => {
             const { id, name, article_id, title, summary } = row;
             if (!acc[id]) acc[id] = { id, name, articles: [] };
@@ -128,7 +145,6 @@ app.get('/articles', (req, res) => {
     `;
     const params = [];
 
-    // Add search term condition
     if (searchTerm) {
         sql += ` AND (a.title LIKE ? OR a.summary LIKE ? OR a.content LIKE ?)`;
         const likeTerm = `%${searchTerm}%`;
@@ -150,11 +166,9 @@ app.get('/articles', (req, res) => {
     });
 });
 
-// Get a single article by its ID
 app.get('/article/:id', (req, res) => {
     const { id } = req.params;
 
-    // SQL query to get the article by ID and its associated tags
     const sql = `
         SELECT 
             a.id, 
@@ -184,9 +198,8 @@ app.get('/article/:id', (req, res) => {
             return res.status(404).json({ message: "Article not found" });
         }
 
-        // Prepare article data to return
         const article = result[0];
-        article.tags = article.tags ? article.tags.split(',') : [];  // Split tags into an array
+        article.tags = article.tags ? article.tags.split(',') : [];  // Split tags into array
 
         res.status(200).json(article);
     });
