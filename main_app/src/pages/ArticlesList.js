@@ -8,12 +8,11 @@ export default function ArticlesList() {
     const [articles, setArticles] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Fetch tags and all articles initially
     useEffect(() => {
         const fetchTagsWithArticles = async () => {
             try {
                 const response = await axios.get('http://localhost:8081/tags');
-                setTags([{ id: null, name: "Все темы" }, ...response.data]); // Adding "All Topics" option
+                setTags([{ id: null, name: "Все темы" }, ...response.data]);
             } catch (error) {
                 console.error("Error fetching tags:", error);
             }
@@ -21,7 +20,6 @@ export default function ArticlesList() {
         fetchTagsWithArticles();
     }, []);
 
-    // Function to fetch articles based on search and selected tag
     const fetchArticles = async () => {
         try {
             const response = await axios.get('http://localhost:8081/articles', {
@@ -36,7 +34,6 @@ export default function ArticlesList() {
         }
     };
 
-    // Automatically search when the search term or selected tag changes
     useEffect(() => {
         fetchArticles();
     }, [searchTerm, selectedTag]);
@@ -46,20 +43,18 @@ export default function ArticlesList() {
             <div className="container p-5 bg-white rounded shadow-lg min-vh-100" style={{ width: '100%', maxWidth: '1200px' }}>
                 <h2 className="mb-4">Все статьи</h2>
                 <div className="d-flex mb-3">
-                    {/* Search Input */}
                     <Form.Control
                         type="text"
                         placeholder="Поиск по статьям..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}  // Update search term
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className="me-2"
                     />
 
-                    {/* Tag Dropdown */}
                     <DropdownButton
                         id="dropdown-tags"
                         title={selectedTag ? selectedTag.name : "Выберите тему"}
-                        onSelect={(eventKey) => setSelectedTag(tags.find(tag => tag.id === parseInt(eventKey)) || null)}  // Update selected tag
+                        onSelect={(eventKey) => setSelectedTag(tags.find(tag => tag.id === parseInt(eventKey)) || null)} 
                         className="ms-2"
                     >
                         {tags.map(tag => (
@@ -70,7 +65,6 @@ export default function ArticlesList() {
                     </DropdownButton>
                 </div>
 
-                {/* Articles List */}
                 <div className="row">
                     {articles.length === 0 ? (
                         <p>Статьи не найдены</p>

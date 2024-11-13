@@ -4,24 +4,23 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 function ArticleView() {
-    const { id } = useParams(); // Get article ID from URL
+    const { id } = useParams();
     const [article, setArticle] = useState(null);
 
     useEffect(() => {
-        // Fetch the article data when the component mounts
         const fetchArticle = async () => {
             try {
                 const response = await axios.get(`http://localhost:8081/article/${id}`);
-                setArticle(response.data);  // Store article data in state
+                setArticle(response.data); 
             } catch (error) {
                 console.error("Error fetching the article:", error);
             }
         };
         fetchArticle();
-    }, [id]);  // Dependency on the article ID
+    }, [id]);
 
-    if (!article) return <div>Loading...</div>;
-
+    if (!article) return <div>Загружка страницы...</div>;
+    
     return (
         <div className="d-flex flex-column min-vh-100 bg-primary">
             <div className="container p-5 bg-white rounded shadow-lg min-vh-100" style={{ width: '100%', maxWidth: '1200px' }}>
@@ -38,7 +37,7 @@ function ArticleView() {
                 <div className="mt-4">
                     <p>{article.content}</p>
                 </div>
-                <Link to='/ArticlesList' className='btn btn-primary rounded-pill'>
+                <Link to='/ArticlesList' className='btn btn-primary'>
                     Назад к статьям
                 </Link>
             </div>

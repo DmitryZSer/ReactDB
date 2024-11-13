@@ -13,7 +13,7 @@ export default function SignUp() {
     });
 
     const [errors, setErrors] = useState({});
-    const [serverError, setServerError] = useState(''); // Новое состояние для ошибок сервера
+    const [serverError, setServerError] = useState(''); 
     const navigation = useNavigate();
 
     const handleInput = (event) => {
@@ -63,7 +63,7 @@ export default function SignUp() {
                         <input type='email' name='email' placeholder='Enter Email'
                             onChange={handleInput} className='form-control'></input>
                         {errors.email && <span className='text-danger'> {errors.email} </span>}
-                        {serverError && <span className='text-danger'> {serverError} </span>} {/* Отображение серверной ошибки */}
+                        {serverError && <span className='text-danger'> {serverError} </span>}
                     </div>
 
                     <div className='mb-3'>

@@ -20,6 +20,7 @@ const db = mysql.createConnection({
 
 const JWT_SECRET = 'zRKIWr7z2uoKrBtUJ2LFceOB-dslR9ZTzHjNghIo5ZY';
 
+// Регистрация пользователя
 app.post('/signup', (req, res) => {
     const { name, email, password } = req.body;
 
@@ -30,7 +31,6 @@ app.post('/signup', (req, res) => {
             return res.status(500).json({ message: "Internal Server Error (search user by email)", error: err });
         }
 
-        // Если пользователь найден
         if (result.length > 0) {
             return res.status(201).json({ message: "Invalid email" });
         }
@@ -93,22 +93,16 @@ app.post('/login', (req, res) => {
     });
 });
 
-app.get('/verify-token', (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    
-    if (!token) {
-        return res.status(401).json({ message: "No token provided" });
-    }
+// Изменение пароля пользователя
+// app.post('/change-password', (req, res) => {
+//     const token = req.headers.authorization?.split(' ')[1];
+//     const { newPassword } = req.body;
 
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
-        
-        res.status(200).json({ user: { id: decoded.id, name: decoded.name, email: decoded.email } });
-    });
-});
+//     if (!token) {
+//         return res.status(401).json({ message: "Требуется авторизация" });
+//     }
 
+// Получение всех тегов
 app.get('/tags', (req, res) => {
     const sqlTags = `
         SELECT t.id, t.name, a.id AS article_id, a.title, a.summary
@@ -151,7 +145,6 @@ app.get('/articles', (req, res) => {
         params.push(likeTerm, likeTerm, likeTerm);
     }
 
-    // Add tag filter if a tag is selected
     if (tagId) {
         sql += ` AND at.tag_id = ?`;
         params.push(tagId);
@@ -199,7 +192,7 @@ app.get('/article/:id', (req, res) => {
         }
 
         const article = result[0];
-        article.tags = article.tags ? article.tags.split(',') : [];  // Split tags into array
+        article.tags = article.tags ? article.tags.split(',') : [];  // Все теги через запятую
 
         res.status(200).json(article);
     });

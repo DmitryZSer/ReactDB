@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import Validation from '../modules/validation/LoginValidation';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { useAuth } from '../modules/AuthContex';
 
 export default function Login() {
     const [values, setValues] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState({});
     const [serverError, setServerError] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleInput = (event) => {
         setValues({ ...values, [event.target.name]: event.target.value });
@@ -27,7 +29,9 @@ export default function Login() {
 
                 if (response.status === 200) {
                     console.log("Login token:", response.data.token)
-                    Cookies.set('auth_token', response.data.token);
+                    login(response.data.token);
+                    //Cookies.set('auth_token', response.data.token);
+                    
                     navigate("/");
                 } else {
                     setServerError("Invalid email or password.");
@@ -57,7 +61,7 @@ export default function Login() {
                         <input type='password' name='password' placeholder='Enter Password'
                             onChange={handleInput} className='form-control'></input>
                         {errors.password && <span className='text-danger'> {errors.password} </span>}
-                        {serverError && <span className='text-danger'> {serverError} </span>} {/* Отображение серверной ошибки */}
+                        {serverError && <span className='text-danger'> {serverError} </span>}
                     </div>
 
                     <div className='d-flex justify-content-between mt-4'>
