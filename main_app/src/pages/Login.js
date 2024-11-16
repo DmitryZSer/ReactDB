@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Validation from '../modules/validation/LoginValidation';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import { useAuth } from '../modules/AuthContex';
 
 export default function Login() {
@@ -25,7 +24,7 @@ export default function Login() {
         
         if (Object.keys(validationErrors).length === 0) {
             try {
-                const response = await axios.post("http://localhost:8081/login", values);
+                const response = await axios.post("http://10.66.66.6:8081/login", values);
 
                 if (response.status === 200) {
                     console.log("Login token:", response.data.token)
@@ -34,11 +33,11 @@ export default function Login() {
                     
                     navigate("/");
                 } else {
-                    setServerError("Invalid email or password.");
+                    setServerError("Неправильная почта или пароль.");
                 }
             } catch (err) {
                 console.error("Login error:", err);
-                setServerError("Server error. Please try again later.");
+                setServerError("Проблемы с работой сервера.");
             }
         }
     };

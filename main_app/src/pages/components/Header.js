@@ -1,9 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
-import {jwtDecode} from 'jwt-decode';
-import axios from 'axios';
-import { useAuth } from '../modules/AuthContex';
+import { useAuth } from '../../modules/AuthContex';
 
 export default function Header() {
     const { user, logout } = useAuth();

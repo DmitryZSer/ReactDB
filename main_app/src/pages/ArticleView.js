@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
+import Comments from './components/Comments';
+
 function ArticleView() {
     const { id } = useParams();
     const [article, setArticle] = useState(null);
@@ -10,7 +12,7 @@ function ArticleView() {
     useEffect(() => {
         const fetchArticle = async () => {
             try {
-                const response = await axios.get(`http://localhost:8081/article/${id}`);
+                const response = await axios.get(`http://10.66.66.6:8081/article/${id}`);
                 setArticle(response.data); 
             } catch (error) {
                 console.error("Error fetching the article:", error);
@@ -40,9 +42,13 @@ function ArticleView() {
                 <Link to='/ArticlesList' className='btn btn-primary'>
                     Назад к статьям
                 </Link>
+                <Comments articleId={id} />
             </div>
         </div>
+        
     );
+
+    
 }
 
 export default ArticleView;

@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = useCallback((token) => {
-        Cookies.set('auth_token', token, { expires: 1, secure: true, sameSite: 'Strict' });
+        Cookies.set('auth_token', token, { expires: 7, secure: false, sameSite: 'Strict' }); //secure: true for https
         const decodedUser = jwtDecode(token);
         setUser(decodedUser);
     }, []);

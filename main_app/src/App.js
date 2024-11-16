@@ -8,7 +8,7 @@ import Home from './pages/Home';
 import ArticlesList from './pages/ArticlesList';
 import ArticleView from './pages/ArticleView';
 import { AuthProvider } from './modules/AuthContex';
-import Header from './pages/Header';
+import Header from './pages/components/Header';
 import Profile from './pages/Profile';
 
 function App() {

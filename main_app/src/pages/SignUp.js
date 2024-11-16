@@ -30,17 +30,21 @@ export default function SignUp() {
         if (Object.keys(validationErrors).length === 0) {
             try {
                 const { password2, ...dataToSend } = values;
-                const response = await axios.post("http://localhost:8081/signup", dataToSend);
+                const response = await axios.post("http://10.66.66.6:8081/signup", dataToSend);
 
                 if (response.status === 200) {
                     console.log("Successful registration:", response.data);
                     navigation("/");
                 } else if (response.status === 201) {
                     console.log("Registration failed (email):", response);
-                    setServerError("Incorrect email.");
+                    setServerError("Пользователь с такой почтой уже существует.");
+                } else if (response.status === 202) {
+                    console.log("Registration failed (name):", response);
+                    setServerError("Пользователь с таким именем уже существует.");
                 }
             } catch (err) {
                 console.error("Error with registration request:\n", err);
+                setServerError("Проблемы с работой сервера.");
             }
         }
     };

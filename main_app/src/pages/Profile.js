@@ -25,7 +25,7 @@ export default function Profile() {
 
         try {
             const token = Cookies.get('auth_token');
-            await axios.post('http://localhost:8081/change-password', { newPassword }, {
+            await axios.post('http://10.66.66.6:8081/change-password', { newPassword }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMessage("Пароль успешно изменен");

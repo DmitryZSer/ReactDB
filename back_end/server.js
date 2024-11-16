@@ -24,34 +24,47 @@ const JWT_SECRET = 'zRKIWr7z2uoKrBtUJ2LFceOB-dslR9ZTzHjNghIo5ZY';
 app.post('/signup', (req, res) => {
     const { name, email, password } = req.body;
 
-    const sqlCheckEmail = "SELECT * FROM users WHERE email = ?";
-    db.query(sqlCheckEmail, [email], (err, result) => {
+    const sqlCheckName = "SELECT * FROM users WHERE name = ?";
+    db.query(sqlCheckName, [name], (err, result) => {
         if (err) {
             console.error("Error querying data: ", err);
-            return res.status(500).json({ message: "Internal Server Error (search user by email)", error: err });
+            return res.status(500).json({ message: "Internal Server Error (search user by name)", error: err });
         }
 
         if (result.length > 0) {
-            return res.status(201).json({ message: "Invalid email" });
+            return res.status(202).json({ message: "Invalid name" });
         }
 
-        bcrypt.hash(password, 10, (err, hashedPassword) => {
+        const sqlCheckEmail = "SELECT * FROM users WHERE email = ?";
+        db.query(sqlCheckEmail, [email], (err, result) => {
             if (err) {
-                console.error("Error hashing password: ", err);
-                return res.status(500).json({ message: "Internal Server Error (Error hashing password)", error: err });
+                console.error("Error querying data: ", err);
+                return res.status(500).json({ message: "Internal Server Error (search user by email)", error: err });
             }
 
-            const sqlInsertUser = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-            db.query(sqlInsertUser, [name, email, hashedPassword], (err, result) => {
+            if (result.length > 0) {
+                return res.status(201).json({ message: "Invalid email" });
+            }
+
+            bcrypt.hash(password, 10, (err, hashedPassword) => {
                 if (err) {
-                    console.error("Error inserting data: ", err);
-                    return res.status(500).json({ message: "Internal Server Error (Error inserting data)", error: err });
+                    console.error("Error hashing password: ", err);
+                    return res.status(500).json({ message: "Internal Server Error (Error hashing password)", error: err });
                 }
-                return res.status(200).json({ message: "User registered successfully", data: result });
+
+                const sqlInsertUser = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+                db.query(sqlInsertUser, [name, email, hashedPassword], (err, result) => {
+                    if (err) {
+                        console.error("Error inserting data: ", err);
+                        return res.status(500).json({ message: "Internal Server Error (Error inserting data)", error: err });
+                    }
+                    return res.status(200).json({ message: "User registered successfully", data: result });
+                });
             });
         });
     });
 });
+
 
 
 // Логин пользователя
@@ -94,13 +107,36 @@ app.post('/login', (req, res) => {
 });
 
 // Изменение пароля пользователя
-// app.post('/change-password', (req, res) => {
-//     const token = req.headers.authorization?.split(' ')[1];
-//     const { newPassword } = req.body;
+app.post('/change-password', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    const { newPassword } = req.body;
 
-//     if (!token) {
-//         return res.status(401).json({ message: "Требуется авторизация" });
-//     }
+    if (!token) {
+        return res.status(401).json({ message: "Требуется авторизация" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const userId = decoded.id;
+
+        bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
+            if (err) {
+                return res.status(500).json({ message: "Ошибка хеширования пароля" });
+            }
+
+            const sql = "UPDATE users SET password = ? WHERE id = ?";
+            db.query(sql, [hashedPassword, userId], (err, result) => {
+                if (err) {
+                    return res.status(500).json({ message: "Ошибка при изменении пароля" });
+                }
+                return res.status(200).json({ message: "Пароль успешно изменен" });
+            });
+        });
+    } catch (err) {
+        return res.status(401).json({ message: "Неверный токен" });
+    }
+});
+
 
 // Получение всех тегов
 app.get('/tags', (req, res) => {
@@ -197,6 +233,117 @@ app.get('/article/:id', (req, res) => {
         res.status(200).json(article);
     });
 });
+
+// Получение комментариев для статьи
+app.get('/comments/:articleId', (req, res) => {
+    const articleId = req.params.articleId;
+
+    const sql = `
+        SELECT c.id, c.content, c.created_at, c.parent_comment_id, u.name AS author
+        FROM comments c
+        JOIN users u ON c.user_id = u.id
+        WHERE c.article_id = ?
+        ORDER BY c.created_at ASC
+    `;
+
+    db.query(sql, [articleId], (err, results) => {
+        if (err) {
+            console.error("Error fetching comments:", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+        res.json(results);
+    });
+});
+
+// Добавление комментария
+app.post('/comments', (req, res) => {
+    const { articleId, userId, parentCommentId, content } = req.body;
+
+    const sql = `
+        INSERT INTO comments (article_id, user_id, parent_comment_id, content)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(sql, [articleId, userId, parentCommentId || null, content], (err, result) => {
+        if (err) {
+            console.error("Error adding comment:", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+        res.status(201).json({ message: "Comment added successfully", commentId: result.insertId });
+    });
+});
+
+function checkAdmin(req, res, next) {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: "Пользователь не авторизован" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const userId = decoded.id;
+
+        const sql = "SELECT isAdmin FROM users WHERE id = ?";
+        db.query(sql, [userId], (err, result) => {
+            if (err) {
+                console.error("Ошибка при проверке роли администратора:", err);
+                return res.status(500).json({ message: "Ошибка сервера" });
+            }
+
+            if (result.length === 0 || !result[0].isAdmin) {
+                return res.status(403).json({ message: "Недостаточно прав для выполнения действия" });
+            }
+
+            req.user = decoded; // Сохраняем данные пользователя для дальнейшего использования
+            next();
+        });
+    } catch (err) {
+        return res.status(401).json({ message: "Недействительный токен" });
+    }
+}
+
+
+// Удаление комментария
+app.delete('/comments/:id', checkAdmin, (req, res) => {
+    const { id } = req.params;
+
+    const sql = "DELETE FROM comments WHERE id = ?";
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("Ошибка при удалении комментария:", err);
+            return res.status(500).json({ message: "Ошибка сервера" });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Комментарий не найден" });
+        }
+
+        res.status(200).json({ message: "Комментарий успешно удален" });
+    });
+});
+
+
+// Редактирование комментария
+app.put('/comments/:id', checkAdmin, (req, res) => {
+    const { id } = req.params;
+    const { content } = req.body;
+
+    const sql = "UPDATE comments SET content = ? WHERE id = ?";
+    db.query(sql, [content, id], (err, result) => {
+        if (err) {
+            console.error("Ошибка при редактировании комментария:", err);
+            return res.status(500).json({ message: "Ошибка сервера" });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Комментарий не найден" });
+        }
+
+        res.status(200).json({ message: "Комментарий успешно обновлен" });
+    });
+});
+
+
 
 
 

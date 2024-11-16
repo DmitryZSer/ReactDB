@@ -11,7 +11,7 @@ export default function ArticlesList() {
     useEffect(() => {
         const fetchTagsWithArticles = async () => {
             try {
-                const response = await axios.get('http://localhost:8081/tags');
+                const response = await axios.get('http://10.66.66.6:8081/tags');
                 setTags([{ id: null, name: "Все темы" }, ...response.data]);
             } catch (error) {
                 console.error("Error fetching tags:", error);
@@ -22,7 +22,7 @@ export default function ArticlesList() {
 
     const fetchArticles = async () => {
         try {
-            const response = await axios.get('http://localhost:8081/articles', {
+            const response = await axios.get('http://10.66.66.6:8081/articles', {
                 params: {
                     searchTerm,
                     tagId: selectedTag ? selectedTag.id : null
