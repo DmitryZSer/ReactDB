@@ -75,7 +75,7 @@ export default function ArticlesList() {
                                     <Card.Body>
                                         <Card.Title>{article.title}</Card.Title>
                                         <Card.Text>{article.summary}</Card.Text>
-                                        <Button variant="primary" href={`/article/${article.id}`}>
+                                        <Button variant="primary" href={`/articles/${article.id}`}>
                                             Читать статью
                                         </Button>
                                     </Card.Body>

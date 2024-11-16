@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import {jwtDecode} from 'jwt-decode';
 
@@ -15,19 +15,25 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const login = (token) => {
+    const login = useCallback((token) => {
         Cookies.set('auth_token', token, { expires: 1, secure: true, sameSite: 'Strict' });
         const decodedUser = jwtDecode(token);
         setUser(decodedUser);
-    };
+    }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         Cookies.remove('auth_token');
         setUser(null);
-    };
+    }, []);
+
+    const contextValue = useMemo(() => ({
+        user,
+        login,
+        logout,
+    }), [user, login, logout]);
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
