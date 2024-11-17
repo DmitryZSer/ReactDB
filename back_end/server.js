@@ -11,12 +11,34 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-const db = mysql.createConnection({
+const dbConfig = {
     host: "localhost",
     user: "root",
     password: "",
     database: "reactdb"
-});
+};
+
+let db;
+
+function handleDisconnect() {
+    db = mysql.createConnection(dbConfig);
+
+    db.connect(function (err) { // The server is either down or restarting (takes a while sometimes).
+        if (err) {
+            console.log('\nError when connecting to db:', err, '\nError when connecting to db.');
+            setTimeout(handleDisconnect, 5000);
+            return;
+        }
+        console.log('Connected to the database.\n');
+    });
+
+    db.on('error', function (err) {
+        console.log('db error', err);
+        handleDisconnect();
+    });
+}
+
+handleDisconnect();
 
 const JWT_SECRET = 'zRKIWr7z2uoKrBtUJ2LFceOB-dslR9ZTzHjNghIo5ZY';
 

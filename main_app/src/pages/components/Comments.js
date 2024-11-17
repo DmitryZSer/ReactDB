@@ -121,16 +121,27 @@ export default function Comments({ articleId }) {
                         <p>{comment.content}</p>
                     )}
                     {editingCommentId === comment.id ? (
+                         <button
+                         className="btn mt-2 btn-sm btn-primary"
+                         onClick={() => handleEditComment(comment.id)}
+                     >
+                         Сохранить
+                     </button>
+                    ) : (
+                        <></>
+                    )}
+                    {editingCommentId === comment.id ? (
                         <button
-                            className="btn btn-sm btn-primary"
-                            onClick={() => handleEditComment(comment.id)}
+                            className="btn mt-2 ms-2 btn-sm btn-danger"
+                            onClick={() => setEditingCommentId(null)}
                         >
-                            Сохранить
+                            Отменить
                         </button>
+                        
                     ) : (
                         <>
                             <button
-                                className="btn btn-sm btn-primary"
+                                className="reply-button"
                                 onClick={() => handleReply(comment.id)}
                             >
                                 Ответить
@@ -175,7 +186,11 @@ export default function Comments({ articleId }) {
                             </button>
                             <button
                                 className="btn btn-secondary btn-sm mt-2 ms-2"
-                                onClick={() => setReplyTo(null)}
+                                onClick={() => {
+                                    setReplyTo(null)
+                                    setNewComment("")
+                                }}
+                                
                             >
                                 Отмена
                             </button>
@@ -208,7 +223,10 @@ export default function Comments({ articleId }) {
                 {replyTo && (
                     <button
                         className="btn btn-secondary mt-2 ms-2"
-                        onClick={() => setReplyTo(null)}
+                        onClick={() => {
+                            setReplyTo(null)
+                            setNewComment("")
+                        }}
                     >
                         Отменить ответ
                     </button>

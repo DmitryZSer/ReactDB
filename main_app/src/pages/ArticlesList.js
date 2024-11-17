@@ -67,7 +67,7 @@ export default function ArticlesList() {
 
                 <div className="row">
                     {articles.length === 0 ? (
-                        <p>Статьи не найдены</p>
+                        <p>Идет загрузка...<br/>Или проблема с базой данных ಥ_ಥ</p>
                     ) : (
                         articles.map(article => (
                             <div key={article.id} className="col-md-4 mb-3">
