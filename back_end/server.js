@@ -265,6 +265,82 @@ app.get('/articles/:id', (req, res) => {
     });
 });
 
+// Запрос для обновления существующей статьи
+app.put('/articles/:id', (req, res) => {
+    const { id } = req.params;
+    const { title, summary, content, tags } = req.body;
+
+    const sql = `
+        UPDATE articles 
+        SET title = ?, summary = ?, content = ?, updated_at = NOW() 
+        WHERE id = ?
+    `;
+
+    db.query(sql, [title, summary, content, id], (err, result) => {
+        if (err) {
+            console.error("Error updating article: ", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+
+        // Обновляем теги
+        const deleteTagsSql = `DELETE FROM article_tags WHERE article_id = ?`;
+        db.query(deleteTagsSql, [id], (err) => {
+            if (err) console.error("Error deleting old tags: ", err);
+
+            if (tags && tags.length > 0) {
+                const insertTagsSql = `
+                    INSERT INTO article_tags (article_id, tag_id)
+                    SELECT ?, id FROM tags WHERE name IN (?);
+                `;
+                db.query(insertTagsSql, [id, tags], (err) => {
+                    if (err) {
+                        console.error("Error inserting new tags:", err);
+                    }
+                });
+            }
+
+            res.status(200).json({ message: "Article updated" });
+        });
+    });
+});
+
+// Запрос для сохранения новой статьи
+app.post('/articles', (req, res) => {
+    const { title, summary, content, tags } = req.body;
+
+    const sql = `
+        INSERT INTO articles (title, summary, content, created_at, updated_at)
+        VALUES (?, ?, ?, NOW(), NOW());
+    `;
+
+    db.query(sql, [title, summary, content], (err, result) => {
+        if (err) {
+            console.error("Error saving article: ", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+
+        const articleId = result.insertId;
+        
+        // Добавляем теги к статье
+        if (tags && tags.length > 0) {
+            const tagSql = `
+                INSERT INTO article_tags (article_id, tag_id)
+                SELECT ?, id FROM tags WHERE name IN (?);
+            `;
+            db.query(tagSql, [articleId, tags], (err) => {
+                if (err) {
+                    console.error("Error associating tags with article:", err);
+                }
+            });
+        }
+
+        res.status(201).json({ message: "Article created", articleId });
+    });
+});
+
+
+
+
 // Получение комментариев для статьи
 app.get('/comments/:articleId', (req, res) => {
     const articleId = req.params.articleId;

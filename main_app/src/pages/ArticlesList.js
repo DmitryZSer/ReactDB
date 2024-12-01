@@ -46,6 +46,9 @@ export default function ArticlesList() {
         <div className="d-flex flex-column min-vh-100 bg-primary">
             <div className="container p-5 bg-white rounded shadow-lg min-vh-100" style={{ width: '100%', maxWidth: '1200px' }}>
                 <h2 className="mb-4">Все статьи</h2>
+                <Button className="btn btn-success mb-3" href={`/articles/new`}>
+                     Создать новую статью
+                </Button>
                 <div className="d-flex mb-3">
                     <Form.Control
                         type="text"
@@ -71,7 +74,7 @@ export default function ArticlesList() {
 
                 <div className="row">
                     {articles.length === 0 ? (
-                        <p>Идет загрузка...<br/>Или проблема с базой данных ಥ_ಥ</p>
+                        <p>Статьи не найдены...<br></br>(⊙﹏⊙∥) (＠_＠;) (´。＿。｀)</p>
                     ) : (
                         articles.map(article => (
                             <div key={article.id} className="col-md-4 mb-3">

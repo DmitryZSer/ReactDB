@@ -9,6 +9,7 @@ import ArticleView from './pages/ArticleView';
 import { AuthProvider } from './modules/AuthContex';
 import Header from './pages/components/Header';
 import Profile from './pages/Profile';
+import ArticleEdit from './pages/ArticleEdit';
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
         <Route path='/SignUp' element={<SignUp></SignUp>}></Route>
         <Route path='/Profile' element={<Profile></Profile>}></Route>
         <Route path='/Home' element={<Home></Home>}></Route>
+        <Route path='/articles/:id/edit' element={<ArticleEdit></ArticleEdit>}></Route>
+        <Route path='/articles/new' element={<ArticleEdit></ArticleEdit>}></Route>
       </Routes>
     </BrowserRouter>
     </AuthProvider>

@@ -55,7 +55,7 @@ export const addComment = async (data) => {
 };
 
 // Удалить комментарий
-export const deleteCommentById = async (commentId, token) => {
+export const deleteCommentById = async (commentId) => {
     try {
         await axios.delete(`${BASE_URL}/comments/${commentId}`);
     } catch (error) {
@@ -64,14 +64,25 @@ export const deleteCommentById = async (commentId, token) => {
 };
 
 // Обновить комментарий
-export const updateCommentById = async (commentId, data, token) => {
+export const updateCommentById = async (commentId, data) => {
     try {
         const response = await axios.put(`${BASE_URL}/comments/${commentId}`, data,);
         return response.data;
     } catch (error) {
         throw error;
     }
-
-    // 
 };
+
+    // Изменение пароля
+export const changePassword = async (newPassword, token) => {
+    try { 
+        await axios.post(`${BASE_URL}/change-password`, { newPassword }, {
+            headers: { Authorization: `Bearer ${token}` }
+       });
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
 

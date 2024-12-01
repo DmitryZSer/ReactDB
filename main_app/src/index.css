@@ -78,3 +78,83 @@ table {
   text-decoration: none;
   opacity: 1;
 }
+
+/* ArticleEdit */
+.article-edit-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.article-edit-title {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+}
+
+.loading-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.article-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-label {
+  font-weight: bold;
+  color: #555;
+}
+
+.form-input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.form-input:focus {
+  border-color: #007bff;
+}
+
+.save-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  max-width: 200px;
+}
+
+.save-button:disabled {
+  background-color: #ccc;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: #218838;
+}

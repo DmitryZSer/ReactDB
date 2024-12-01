@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import {jwtDecode} from 'jwt-decode';
+import { changePassword } from '../modules/Api';
 
 export default function Profile() {
     const [user, setUser] = useState({ name: '', email: '' });
@@ -25,12 +26,12 @@ export default function Profile() {
 
         try {
             const token = Cookies.get('auth_token');
-            await axios.post('http://10.66.66.6:8081/change-password', { newPassword }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await changePassword(newPassword, token)
             setMessage("Пароль успешно изменен");
+            console.log("Password changed.")
         } catch (error) {
             setMessage("Ошибка при изменении пароля");
+            console.log("Error change password: ", error)
         }
     };
 

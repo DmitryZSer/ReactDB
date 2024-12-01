@@ -5,6 +5,11 @@ import { Link } from 'react-router-dom';
 
 import { getArticleById } from '../modules/Api';
 import Comments from './components/Comments';
+import ReactQuill from 'react-quill';
+
+import "katex/dist/katex.min.css";
+import hljs from "highlight.js";
+import "highlight.js/lib/common"; // Импорт базовых языков
 
 function ArticleView() {
     const { id } = useParams();
@@ -30,6 +35,10 @@ function ArticleView() {
         setIsPressed(!isPressed);
     };
 
+    const modules = {
+        syntax: true,
+    };
+
     if (!article) return <div className="d-flex flex-column min-vh-100 bg-primary"><p className="container p-5 bg-white rounded shadow-lg min-vh-100">Идет загрузка...<br/>Или проблема с базой данных ಥ_ಥ</p></div>;
 
     return (
@@ -46,7 +55,13 @@ function ArticleView() {
                     )) : "Нет отмеченных тегов."}
                 </div>
                 <div className="mt-4">
-                    <p>{article.content}</p>
+                    {/* <p>{article.content}</p> */}
+                    <ReactQuill
+                        theme="bubble"
+                        modules={modules}
+                        readOnly={true}
+                        value={article.content}
+                    />
                 </div>
                 <div>
                     <Link to='/' className='btn btn-primary'>
