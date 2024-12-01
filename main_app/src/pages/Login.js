@@ -24,15 +24,15 @@ export default function Login() {
         
         if (Object.keys(validationErrors).length === 0) {
             try {
-                const response = await axios.post("http://10.66.66.6:8081/login", values);
+                const response = await axios.post("http://localhost:8081/login", values);
 
                 if (response.status === 200) {
                     console.log("Login token:", response.data.token)
                     login(response.data.token);
                     //Cookies.set('auth_token', response.data.token);
-                    
                     navigate("/");
-                } else {
+                }
+                else if (response.status === 204) {
                     setServerError("Неправильная почта или пароль.");
                 }
             } catch (err) {

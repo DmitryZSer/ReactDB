@@ -5,7 +5,14 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 
+
 const app = express();
+
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"], 
+    //credentials: true, // Если использовать cookies или авторизацию
+}));
 
 app.use(cors());
 app.use(express.json());
@@ -122,7 +129,7 @@ app.post('/login', (req, res) => {
                     token: token
                 });
             } else {
-                return res.status(400).json({ message: "Invalid email or password" });
+                return res.status(204).json({ message: "Invalid email or password" });
             }
         });
     });
@@ -187,6 +194,7 @@ app.get('/tags', (req, res) => {
     });
 });
 
+// Получение всех статей
 app.get('/articles', (req, res) => {
     const { searchTerm, tagId } = req.query;
     let sql = `
@@ -217,7 +225,8 @@ app.get('/articles', (req, res) => {
     });
 });
 
-app.get('/article/:id', (req, res) => {
+// Получение статьи по айди
+app.get('/articles/:id', (req, res) => {
     const { id } = req.params;
 
     const sql = `
@@ -295,38 +304,9 @@ app.post('/comments', (req, res) => {
     });
 });
 
-function checkAdmin(req, res, next) {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ message: "Пользователь не авторизован" });
-    }
-
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.id;
-
-        const sql = "SELECT isAdmin FROM users WHERE id = ?";
-        db.query(sql, [userId], (err, result) => {
-            if (err) {
-                console.error("Ошибка при проверке роли администратора:", err);
-                return res.status(500).json({ message: "Ошибка сервера" });
-            }
-
-            if (result.length === 0 || !result[0].isAdmin) {
-                return res.status(403).json({ message: "Недостаточно прав для выполнения действия" });
-            }
-
-            req.user = decoded; // Сохраняем данные пользователя для дальнейшего использования
-            next();
-        });
-    } catch (err) {
-        return res.status(401).json({ message: "Недействительный токен" });
-    }
-}
-
 
 // Удаление комментария
-app.delete('/comments/:id', checkAdmin, (req, res) => {
+app.delete('/comments/:id', (req, res) => {
     const { id } = req.params;
 
     const sql = "DELETE FROM comments WHERE id = ?";
@@ -346,7 +326,7 @@ app.delete('/comments/:id', checkAdmin, (req, res) => {
 
 
 // Редактирование комментария
-app.put('/comments/:id', checkAdmin, (req, res) => {
+app.put('/comments/:id', (req, res) => {
     const { id } = req.params;
     const { content } = req.body;
 

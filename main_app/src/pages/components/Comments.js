@@ -1,26 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import Cookies from "js-cookie";
 import {jwtDecode} from "jwt-decode";
+import { addComment, deleteCommentById, getCommentsByArticleId, updateCommentById } from "../../modules/Api";
 
 export default function Comments({ articleId }) {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [replyTo, setReplyTo] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
-    const [editingCommentId, setEditingCommentId] = useState(null);
-    const [editingContent, setEditingContent] = useState("");
+    const [editingCommentId, setUpdateCommentId] = useState(null);
+    const [updateContent, setUpdateContent] = useState("");
 
     const replyInputRef = useRef(null);
 
     useEffect(() => {
         fetchComments();
         checkAdminStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchComments = async () => {
         try {
-            const response = await axios.get(`http://10.66.66.6:8081/comments/${articleId}`);
+            const response = await getCommentsByArticleId(articleId);
             setComments(response.data);
         } catch (error) {
             console.error("Error fetching comments:", error);
@@ -42,7 +43,7 @@ export default function Comments({ articleId }) {
         const decoded = jwtDecode(token);
 
         try {
-            await axios.post("http://10.66.66.6:8081/comments", {
+            await addComment({
                 articleId,
                 userId: decoded.id,
                 parentCommentId: replyTo,
@@ -61,26 +62,18 @@ export default function Comments({ articleId }) {
 
         const token = Cookies.get("auth_token");
         try {
-            await axios.delete(`http://10.66.66.6:8081/comments/${commentId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            await deleteCommentById(commentId, token);
             fetchComments();
         } catch (error) {
             console.error("Error deleting comment:", error);
         }
     };
 
-    const handleEditComment = async (commentId) => {
+    const handleUpdateComment = async (commentId) => {
         const token = Cookies.get("auth_token");
         try {
-            await axios.put(
-                `http://10.66.66.6:8081/comments/${commentId}`,
-                { content: editingContent },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-            setEditingCommentId(null);
+            await updateCommentById(commentId, { content: updateContent }, token);
+            setUpdateCommentId(null);
             fetchComments();
         } catch (error) {
             console.error("Error editing comment:", error);
@@ -114,8 +107,8 @@ export default function Comments({ articleId }) {
                     {editingCommentId === comment.id ? (
                         <textarea
                             className="form-control"
-                            value={editingContent}
-                            onChange={(e) => setEditingContent(e.target.value)}
+                            value={updateContent}
+                            onChange={(e) => setUpdateContent(e.target.value)}
                         />
                     ) : (
                         <p>{comment.content}</p>
@@ -123,7 +116,7 @@ export default function Comments({ articleId }) {
                     {editingCommentId === comment.id ? (
                          <button
                          className="btn mt-2 btn-sm btn-primary"
-                         onClick={() => handleEditComment(comment.id)}
+                         onClick={() => handleUpdateComment(comment.id)}
                      >
                          Сохранить
                      </button>
@@ -133,7 +126,7 @@ export default function Comments({ articleId }) {
                     {editingCommentId === comment.id ? (
                         <button
                             className="btn mt-2 ms-2 btn-sm btn-danger"
-                            onClick={() => setEditingCommentId(null)}
+                            onClick={() => setUpdateCommentId(null)}
                         >
                             Отменить
                         </button>
@@ -157,8 +150,8 @@ export default function Comments({ articleId }) {
                                     <button
                                         className="btn btn-sm btn-secondary ms-2"
                                         onClick={() => {
-                                            setEditingCommentId(comment.id);
-                                            setEditingContent(comment.content);
+                                            setUpdateCommentId(comment.id);
+                                            setUpdateContent(comment.content);
                                         }}
                                     >
                                         Редактировать

@@ -1,0 +1,11 @@
+{
+"name": "combined-projects",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"npm start --prefix back_end\" \"npm start --prefix main_app\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+
+}

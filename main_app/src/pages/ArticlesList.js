@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dropdown, DropdownButton, Form, Card, Button } from 'react-bootstrap';
-import axios from 'axios';
+import { getArticlesParameters, getTagsWithArticles } from '../modules/Api';
 
 export default function ArticlesList() {
     const [tags, setTags] = useState([]);
@@ -11,8 +11,9 @@ export default function ArticlesList() {
     useEffect(() => {
         const fetchTagsWithArticles = async () => {
             try {
-                const response = await axios.get('http://10.66.66.6:8081/tags');
-                setTags([{ id: null, name: "Все темы" }, ...response.data]);
+                 const response = await getTagsWithArticles();
+                //const response = await axios.get('http://localhost:8081/tags');
+                setTags([{ id: null, name: "Все темы" }, ...response]);
             } catch (error) {
                 console.error("Error fetching tags:", error);
             }
@@ -22,13 +23,13 @@ export default function ArticlesList() {
 
     const fetchArticles = async () => {
         try {
-            const response = await axios.get('http://10.66.66.6:8081/articles', {
+           const response = await getArticlesParameters({
                 params: {
                     searchTerm,
                     tagId: selectedTag ? selectedTag.id : null
                 }
             });
-            setArticles(response.data);
+            setArticles(response);
         } catch (error) {
             console.error("Error fetching filtered articles:", error);
         }
@@ -36,8 +37,11 @@ export default function ArticlesList() {
 
     useEffect(() => {
         fetchArticles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchTerm, selectedTag]);
 
+    if (!articles)  return <div className="d-flex flex-column min-vh-100 bg-primary"><p className="container p-5 bg-white rounded shadow-lg min-vh-100"><br/>Какая-то проблема с базой данных ಥ_ಥ</p></div>;
+    
     return (
         <div className="d-flex flex-column min-vh-100 bg-primary">
             <div className="container p-5 bg-white rounded shadow-lg min-vh-100" style={{ width: '100%', maxWidth: '1200px' }}>
