@@ -5,64 +5,67 @@ import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "katex/dist/katex.min.css";
-import hljs from "highlight.js";
-import "highlight.js/lib/common"; // Импорт базовых языков
+import "highlight.js/lib/common";
+import { getArticleById, postArticle, putArticleById } from "../modules/Api";
 
 const ArticleEdit = () => {
-  const { id } = useParams(); // Получаем ID из URL (если есть)
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  // Состояния для формы
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
-  const [allTags, setAllTags] = useState([]); // Все доступные теги
+  const [allTags, setAllTags] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Загрузка всех доступных тегов
   useEffect(() => {
     axios.get("http://localhost:8081/tags")
-      .then(response => {
-        setAllTags(response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching tags:", error);
-      });
+      .then(response => setAllTags(response.data))
+      .catch(error => console.error("Error fetching tags:", error));
   }, []);
 
-  // Загрузка статьи для редактирования
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && (event.key === 's' || event.key === "S" || event.key === "ы" || event.key === "Ы")) {
+        event.preventDefault(); // Предотвращаем стандартное поведение браузера
+        if (id) {
+          handleSave();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  },);
+
+  function Exit() {
+    navigate('/');
+  }
+
   useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`http://localhost:8081/articles/${id}`)
-        .then(response => {
-          const article = response.data;
+      getArticleById(id)
+        .then(article => {
           setTitle(article.title);
           setSummary(article.summary);
           setContent(article.content);
-          setTags(article.tags || []); // Загружаем теги
+          setTags(article.tags || []);
         })
         .catch(err => setError(err.message))
         .finally(() => setLoading(false));
     }
   }, [id]);
 
-  // Обработка сохранения статьи
   const handleSave = async () => {
     const articleData = { title, summary, content, tags };
-
     try {
       setLoading(true);
-      if (id) {
-        // Если редактируем статью
-        await axios.put(`http://localhost:8081/articles/${id}`, articleData);
-      } else {
-        // Если создаем новую статью
-        await axios.post("http://localhost:8081/articles", articleData);
-      }
-      navigate("/"); // Перенаправление на главную страницу после сохранения
+      id ? await putArticleById(id, articleData) : await postArticle(articleData);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -70,19 +73,24 @@ const ArticleEdit = () => {
     }
   };
 
-  const handleTagChange = (e) => {
-    const selectedTags = Array.from(e.target.selectedOptions, option => option.value);
-    setTags(selectedTags);
+  const handleRemoveTag = (tagToRemove) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  // Модули Quill
+  const handleAddTag = (e) => {
+    const tagToAdd = e.target.value;
+    if (!tags.includes(tagToAdd)) {
+      setTags([...tags, tagToAdd]);
+    }
+  };
+
   const modules = {
     syntax: true,
     toolbar: {
       container: [
         [{ font: [] }],
         [{ size: ["small", false, "large", "huge"] }],
-        [{header: 1}, {header: 2},], // {header: [1, 2, 6, false]}, 
+        [{ header: 1 }, { header: 2 },], // {header: [1, 2, 6, false]}, 
         ["bold", "italic", "underline", "strike"],
         [{ color: [] }, { background: [] }],
         ["blockquote", "code-block"],
@@ -97,69 +105,73 @@ const ArticleEdit = () => {
   };
 
   return (
-    <div className="article-edit-container">
-      <h1 className="article-edit-title">{id ? "Edit Article" : "Create New Article"}</h1>
-      {error && <p className="error-message">{error}</p>}
-      {loading ? (
-        <p className="loading-message">Loading...</p>
-      ) : (
-        <form onSubmit={(e) => e.preventDefault()} className="article-edit-form">
-          <div className="form-group">
-            <label className="form-label">Title:</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter article title"
-              className="form-input"
-              required
-            />
+    <div className="page-container article-edit-page">
+      <div className="sidebar">
+        <h2 className="article-edit-title">{id ? "Изменение статьи" : "Создание новой статьи"}</h2>
+        {error && <p className="error-message">{error}</p>}
+        <div className="form-group">
+          <label className="form-label">Заголовок:</label>
+          <input
+            className="form-input"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter article title"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Краткое содержание:</label>
+          <textarea
+            className="form-input"
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            placeholder="Enter article summary"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Тэги:</label>
+          <div className="tags-container">
+            {tags.map((tag) => (
+              <span key={tag} className="badge bg-secondary me-2 mb-2">
+                {tag}
+                <button
+                  className="btn btn-sm btn-danger ms-2"
+                  onClick={() => handleRemoveTag(tag)}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
           </div>
-          <div className="form-group">
-            <label className="form-label">Summary:</label>
-            <textarea
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="Enter article summary"
-              className="form-input"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Content:</label>
-            <ReactQuill
-              theme="snow"
-              modules={modules}
-              value={content}
-              onChange={setContent}
-              placeholder="Write something amazing..."
-              style={{ height: "600px" }}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Tags:</label>
-            <select
-              multiple
-              value={tags}
-              onChange={handleTagChange}
-              className="form-input"
-            >
-              {allTags.map(tag => (
-                <option key={tag.id} value={tag.name}>{tag.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <button 
-              onClick={handleSave} 
-              disabled={loading} 
-              className="save-button"
-            >
-              {id ? "Save Changes" : "Create Article"}
-            </button>
-          </div>
-        </form>
-      )}
+          <select onChange={handleAddTag} value="">
+            <option value="" disabled>Add a tag</option>
+            {allTags.map(tag => (
+              <option key={tag.id} value={tag.name}>
+                {tag.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button onClick={handleSave} disabled={loading} className="save-button">
+          {id ? "Сохранить изменения" : "Создать статью"}
+        </button>
+        <button className="btn btn-primary me-2 bg-light text-black" onClick={Exit}>
+        {id ? "Назад к статье" : "Ко всем статьям"}
+        </button>
+      </div>
+      <div className="editor">
+        <ReactQuill
+          className="max-height-container"
+          theme="snow"
+          modules={modules}
+          value={content}
+          onChange={setContent}
+          placeholder="Write something amazing..."
+        //style={{ height: "89vh" }}
+        />
+      </div>
     </div>
   );
 };

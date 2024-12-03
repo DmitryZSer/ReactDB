@@ -15,6 +15,7 @@ export default function Header() {
     }
 
     return (
+        <header>
         <div className="d-flex justify-content-between align-items-center p-2">
             <button className="btn btn-primary me-2 bg-light text-black" onClick={HeaderOnClick}>Блог, гайды... название!</button>
             <div>
@@ -32,5 +33,6 @@ export default function Header() {
                 )}
             </div>
         </div>
+        </header>
     );
 }

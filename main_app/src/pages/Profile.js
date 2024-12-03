@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Cookies from 'js-cookie';
 import {jwtDecode} from 'jwt-decode';
-import { changePassword } from '../modules/Api';
+import { postChangePassword } from '../modules/Api';
 
 export default function Profile() {
     const [user, setUser] = useState({ name: '', email: '' });
@@ -26,7 +25,7 @@ export default function Profile() {
 
         try {
             const token = Cookies.get('auth_token');
-            await changePassword(newPassword, token)
+            await postChangePassword(newPassword, token)
             setMessage("Пароль успешно изменен");
             console.log("Password changed.")
         } catch (error) {

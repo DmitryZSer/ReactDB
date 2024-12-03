@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode";
-import { addComment, deleteCommentById, getCommentsByArticleId, updateCommentById } from "../../modules/Api";
+import { jwtDecode } from "jwt-decode";
+import { postComment, deleteCommentById, getCommentsByArticleId, putCommentById } from "../../modules/Api";
 
 export default function Comments({ articleId }) {
     const [comments, setComments] = useState([]);
@@ -16,7 +16,7 @@ export default function Comments({ articleId }) {
     useEffect(() => {
         fetchComments();
         checkAdminStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchComments = async () => {
@@ -43,7 +43,7 @@ export default function Comments({ articleId }) {
         const decoded = jwtDecode(token);
 
         try {
-            await addComment({
+            await postComment({
                 articleId,
                 userId: decoded.id,
                 parentCommentId: replyTo,
@@ -60,9 +60,8 @@ export default function Comments({ articleId }) {
     const handleDeleteComment = async (commentId) => {
         if (!window.confirm("Вы уверены, что хотите удалить комментарий?")) return;
 
-        const token = Cookies.get("auth_token");
         try {
-            await deleteCommentById(commentId, token);
+            await deleteCommentById(commentId);
             fetchComments();
         } catch (error) {
             console.error("Error deleting comment:", error);
@@ -72,7 +71,7 @@ export default function Comments({ articleId }) {
     const handleUpdateComment = async (commentId) => {
         const token = Cookies.get("auth_token");
         try {
-            await updateCommentById(commentId, { content: updateContent }, token);
+            await putCommentById(commentId, { content: updateContent }, token);
             setUpdateCommentId(null);
             fetchComments();
         } catch (error) {
@@ -114,12 +113,12 @@ export default function Comments({ articleId }) {
                         <p>{comment.content}</p>
                     )}
                     {editingCommentId === comment.id ? (
-                         <button
-                         className="btn mt-2 btn-sm btn-primary"
-                         onClick={() => handleUpdateComment(comment.id)}
-                     >
-                         Сохранить
-                     </button>
+                        <button
+                            className="btn mt-2 btn-sm btn-primary"
+                            onClick={() => handleUpdateComment(comment.id)}
+                        >
+                            Сохранить
+                        </button>
                     ) : (
                         <></>
                     )}
@@ -130,7 +129,7 @@ export default function Comments({ articleId }) {
                         >
                             Отменить
                         </button>
-                        
+
                     ) : (
                         <>
                             <button
@@ -183,7 +182,7 @@ export default function Comments({ articleId }) {
                                     setReplyTo(null)
                                     setNewComment("")
                                 }}
-                                
+
                             >
                                 Отмена
                             </button>

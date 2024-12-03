@@ -50,7 +50,7 @@ export default function SignUp() {
     };
 
     return (
-        <div className='d-flex vh-100 justify-content-center align-items-center bg-primary'>
+        <div className='d-flex min-vh-100 justify-content-center align-items-center bg-primary'>
             <div className='p-5 bg-white rounded shadow-lg' style={{ width: '500px' }}>
                 <form action='' onSubmit={handleSubmit}>
                     <h2 className='mb-4 text-center'>Регистрация</h2>

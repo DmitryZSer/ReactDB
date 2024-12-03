@@ -167,8 +167,8 @@ app.post('/change-password', (req, res) => {
 });
 
 
-// Получение всех тегов
-app.get('/tags', (req, res) => {
+// Получение всех тегов cо статьями
+app.get('/tags-with-articles', (req, res) => {
     const sqlTags = `
         SELECT t.id, t.name, a.id AS article_id, a.title, a.summary
         FROM tags t
@@ -193,6 +193,30 @@ app.get('/tags', (req, res) => {
         return res.json(Object.values(tagsWithArticles));
     });
 });
+
+// Получение всех тегов
+app.get('/tags', (req, res) => {
+    const sqlTags = `
+        SELECT id, name
+        FROM tags
+        ORDER BY name;
+    `;
+
+    db.query(sqlTags, (err, result) => {
+        if (err) {
+            console.error("Error fetching tags: ", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+
+        const tags = result.map(row => ({
+            id: row.id,
+            name: row.name,
+        }));
+
+        return res.json(tags);
+    });
+});
+
 
 // Получение всех статей
 app.get('/articles', (req, res) => {
@@ -304,6 +328,25 @@ app.put('/articles/:id', (req, res) => {
     });
 });
 
+// Удаление статьи по айди
+app.delete('/articles/:id', (req, res) => {
+    const { id } = req.params;
+
+    const sql = "DELETE FROM articles WHERE id = ?";
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("Ошибка при удалении статьи:", err);
+            return res.status(500).json({ message: "Ошибка сервера" });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Статья не найдена" });
+        }
+
+        res.status(200).json({ message: "Статья успешно удалена успешно удален" });
+    });
+});
+
 // Запрос для сохранения новой статьи
 app.post('/articles', (req, res) => {
     const { title, summary, content, tags } = req.body;
@@ -337,9 +380,6 @@ app.post('/articles', (req, res) => {
         res.status(201).json({ message: "Article created", articleId });
     });
 });
-
-
-
 
 // Получение комментариев для статьи
 app.get('/comments/:articleId', (req, res) => {
