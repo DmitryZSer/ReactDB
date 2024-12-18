@@ -38,8 +38,8 @@ export default function Profile() {
         <div className="d-flex flex-column min-vh-100 align-items-center justify-content-center bg-primary">
             <div className="container p-5 bg-white rounded shadow-lg" style={{ maxWidth: '500px' }}>
                 <h2 className="mb-4">Профиль</h2>
-                <p><strong>Имя:</strong> {user.name}</p>
-                <p><strong>Почта:</strong> {user.email}</p>
+                <p><strong>Имя: </strong></p><p name="user-name">{user.name}</p>
+                <p><strong>Почта: </strong></p><p name="user-email">{user.email}</p>
                 <hr />
                 <h4>Изменение пароля</h4>
                 <div className="mb-3">

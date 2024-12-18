@@ -24,6 +24,10 @@ const dbConfig = {
     password: "",
     database: "reactdb"
 };
+//CREATE USER 'keycloak'@'localhost' IDENTIFIED BY '';
+//GRANT ALL PRIVILEGES ON keycloakdb.* TO 'keycloak'@'localhost';
+//FLUSH PRIVILEGES;
+
 
 let db;
 

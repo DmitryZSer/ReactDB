@@ -84,7 +84,7 @@ function ArticleView() {
                         <span key={tag} className="badge bg-secondary me-2">{tag}</span>
                     )) : "Нет отмеченных тегов."}
                 </div>
-                <div className="mt-4">
+                <div>
                     {/* <p>{article.content}</p> */}
                     <ReactQuill
                         theme="bubble"
@@ -115,10 +115,14 @@ function ArticleView() {
                     </button>
                     {isAdmin && (
                         <>
-                            <Link to={`/articles/${id}/edit`} className="btn btn-secondary btn-sm ms-2">
+                            <Link
+                                name="edit-article"
+                                to={`/articles/${id}/edit`}
+                                className="btn btn-secondary btn-sm ms-2">
                                 Редактировать
                             </Link>
                             <button
+                                name="delete-article"
                                 className="btn btn-sm btn-danger ms-2"
                                 onClick={() => handleDeleteArticle()}>
                                 Удалить

@@ -56,6 +56,7 @@ export default function ArticlesList() {
         </Button>
         <div className="d-flex align-items-center mb-4">
           <Form.Control
+            name="main-search"
             type="text"
             placeholder="Поиск по статьям..."
             value={searchTerm}
@@ -96,7 +97,11 @@ export default function ArticlesList() {
                   <Card.Body>
                     <Card.Title className="text-truncate">{article.title}</Card.Title>
                     <Card.Text className="text-muted">{article.summary}</Card.Text>
-                    <Button variant="primary" href={`/articles/${article.id}`} className="w-100">
+                    <Button
+                      name="to-article"
+                      variant="primary"
+                      href={`/articles/${article.id}`}
+                      className="w-100">
                       Читать статью
                     </Button>
                   </Card.Body>

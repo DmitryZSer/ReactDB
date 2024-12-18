@@ -36,14 +36,15 @@ const ArticleEdit = () => {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   },);
 
   function Exit() {
-    navigate('/');
+    if(id) navigate(`/articles/${id}`);
+    else navigate('/');
   }
 
   useEffect(() => {
@@ -145,7 +146,7 @@ const ArticleEdit = () => {
               </span>
             ))}
           </div>
-          <select onChange={handleAddTag} value="">
+          <select name="tag-theme" onChange={handleAddTag} value="">
             <option value="" disabled>Add a tag</option>
             {allTags.map(tag => (
               <option key={tag.id} value={tag.name}>
@@ -154,12 +155,16 @@ const ArticleEdit = () => {
             ))}
           </select>
         </div>
-        <button onClick={handleSave} disabled={loading} className="save-button">
-          {id ? "Сохранить изменения" : "Создать статью"}
-        </button>
-        <button className="btn btn-primary me-2 bg-light text-black" onClick={Exit}>
-        {id ? "Назад к статье" : "Ко всем статьям"}
-        </button>
+
+        <div className="d-flex flex-column justify-content-center align-items-center">
+          <button name="save-btn"  onClick={handleSave} disabled={loading} className="save-button mb-2">
+            {id ? "Сохранить изменения" : "Создать статью"}
+          </button>
+          <button className="btn btn-primary me-2 bg-light text-black" onClick={Exit}>
+            {id ? "Назад к статье" : "Ко всем статьям"}
+          </button>
+        </div>
+
       </div>
       <div className="editor">
         <ReactQuill

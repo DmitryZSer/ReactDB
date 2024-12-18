@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Хост: 127.0.0.1
--- Время создания: Ноя 17 2024 г., 20:13
--- Версия сервера: 10.4.32-MariaDB
--- Версия PHP: 8.2.12
+-- Host: 127.0.0.1
+-- Generation Time: Dec 04, 2024 at 03:04 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- База данных: `reactdb`
+-- Database: `reactdb`
 --
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `articles`
+-- Table structure for table `articles`
 --
 
 CREATE TABLE `articles` (
@@ -38,15 +38,15 @@ CREATE TABLE `articles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `articles`
+-- Dumping data for table `articles`
 --
 
 INSERT INTO `articles` (`id`, `title`, `summary`, `content`, `author_id`, `created_at`, `updated_at`) VALUES
-(1, 'Основы JavaScript', 'Краткий гайд по основам JavaScript', 'Полное руководство по основам JavaScript, включая синтаксис, типы данных и функции.', 43, '2024-11-11 18:28:32', NULL),
+(1, 'Основы JavaScript', 'Краткий гайд по основам JavaScript', '<h2>Полное руководство по основам JavaScript, включая синтаксис, типы данных и функции.</h2><pre class=\"ql-syntax\" spellcheck=\"false\">&nbsp; &nbsp; <span class=\"hljs-keyword\">return</span> (\n&nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;<span class=\"hljs-name\">div</span> <span class=\"hljs-attr\">className</span>=<span class=\"hljs-string\">\"d-flex flex-column min-vh-100 bg-primary\"</span>&gt;</span>\n&nbsp; &nbsp; &nbsp;dsdasdasdasd &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;<span class=\"hljs-name\">div</span> <span class=\"hljs-attr\">className</span>=<span class=\"hljs-string\">\"container p-5 bg-white rounded shadow-lg min-vh-100\"</span> <span class=\"hljs-attr\">style</span>=<span class=\"hljs-string\">{{</span> <span class=\"hljs-attr\">width:</span> \'<span class=\"hljs-attr\">100</span>%\', <span class=\"hljs-attr\">maxWidth:</span> \'<span class=\"hljs-attr\">1200px</span>\' }}&gt;</span>\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;<span class=\"hljs-name\">h1</span> <span class=\"hljs-attr\">className</span>=<span class=\"hljs-string\">\"mb-4\"</span>&gt;</span>{article.title}<span class=\"hljs-tag\">&lt;/<span class=\"hljs-name\">h1</span>&gt;</span>\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;<span class=\"hljs-name\">p</span>&gt;&lt;<span class=\"hljs-name\">strong</span>&gt;</span>Автор: {article.authorName}<span class=\"hljs-tag\">&lt;/<span class=\"hljs-name\">strong</span>&gt;&lt;/<span class=\"hljs-name\">p</span>&gt;</span>\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;<span class=\"hljs-name\">p</span>&gt;&lt;<span class=\"hljs-name\">strong</span>&gt;</span>Создано:<span class=\"hljs-tag\">&lt;/<span class=\"hljs-name\">strong</span>&gt;</span> {new Date(article.created_at).toLocaleDateString()}<span class=\"hljs-tag\">&lt;/<span class=\"hljs-name\">p</span>&gt;</span>\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;<span class=\"hljs-name\">p</span>&gt;&lt;<span class=\"hljs-name\">strong</span>&gt;&lt;/<span class=\"hljs-name\">strong</span>&gt;</span> {article.summary}<span class=\"hljs-tag\">&lt;/<span class=\"hljs-name\">p</span>&gt;</span>\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;<span class=\"hljs-name\">div</span> <span class=\"hljs-attr\">className</span>=<span class=\"hljs-string\">\"mb-4\"</span>&gt;</span>\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;<span class=\"hljs-name\">strong</span>&gt;</span>Тэги: <span class=\"hljs-tag\">&lt;/<span class=\"hljs-name\">strong</span>&gt;</span>\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {article.tags.length &gt; 0 ? article.tags.map(tag =&gt; (\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;<span class=\"hljs-name\">span</span> <span class=\"hljs-attr\">key</span>=<span class=\"hljs-string\">{tag}</span> <span class=\"hljs-attr\">className</span>=<span class=\"hljs-string\">\"badge bg-secondary me-2\"</span>&gt;</span>{tag}<span class=\"hljs-tag\">&lt;/<span class=\"hljs-name\">span</span>&gt;</span>\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; )) : \"Нет отмеченных тегов.\"}\n&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;/<span class=\"hljs-name\">div</span>&gt;</span>\n&nbsp; &nbsp; &nbsp; &nbsp; <span class=\"hljs-tag\">&lt;/<span class=\"hljs-name\">div</span>&gt;</span>\n\n\n&nbsp; &nbsp; );\n</pre><p>asdasd</p><h1><em style=\"color: rgb(255, 153, 0);\"><s><u>ghjfghjg     hj    dddd   ddd</u></s></em></h1><pre class=\"ql-syntax\" spellcheck=\"false\">ghjghjghjgh\n</pre><blockquote>dfsgdsfdsfdsfdsfdsf</blockquote><blockquote><br></blockquote><h1><span style=\"background-color: rgb(102, 185, 102);\">fvcxvcxvcxvcxvcxvcxvcxvcx</span></h1><p><br></p><iframe class=\"ql-video\" frameborder=\"0\" allowfullscreen=\"true\" src=\"https://www.youtube.com/embed/WmG_e-u_Ktw?showinfo=0\"></iframe><p><br></p><p><br></p><p><a href=\"https://docs.google.com/spreadsheets/d/1T4xH4lPaO1L5oNqDmI-CzFhsc_Mrr0OItAxQBQbHCKA/edit?pli=1&amp;gid=1692378025#gid=1692378025\" rel=\"noopener noreferrer\" target=\"_blank\">https://docs.google.com/spreadsheets/d/1T4xH4lPaO1L5oNqDmI-CzFhsc_Mrr0OItAxQBQbHCKA/edit?pli=1&amp;gid=1692378025#gid=1692378025</a></p>', 43, '2024-11-11 18:28:32', '2024-12-03 21:42:24'),
 (2, 'Создание веб-приложения с React', 'Пошаговый гайд по созданию веб-приложения на React', 'Детальный разбор процесса создания SPA с использованием React и современных библиотек.', 44, '2024-11-11 18:28:32', NULL),
 (3, 'Настройка Git и GitHub', 'Учимся работать с Git и GitHub', 'Практическое руководство по установке, настройке и основам работы с Git и GitHub.', 45, '2024-11-11 18:28:32', NULL),
 (4, 'Работа с MySQL', 'Основы работы с реляционными базами данных на примере MySQL', 'Операции CRUD, работа с индексами и оптимизация запросов в MySQL.', 43, '2024-11-11 18:28:32', NULL),
-(5, 'Основы Python для начинающих', 'Краткий гайд по Python для новичков', 'Основы Python, включая типы данных, циклы и функции.', 44, '2024-11-11 18:28:32', NULL),
+(5, 'Основы Python для начинающих', 'Краткий гайд по Python для новичков', '<p>Основы Python, включая типы данных, циклы и функции.</p>', 44, '2024-11-11 18:28:32', '2024-12-03 22:19:33'),
 (6, 'Алгоритмы и структуры данных', 'Гид по алгоритмам и структурам данных', 'Разбираем основные алгоритмы: сортировки, поиска и структуры данных.', 45, '2024-11-11 18:28:32', NULL),
 (7, 'DevOps: Введение в Docker', 'Основы Docker для начинающих DevOps инженеров', 'Объяснение работы Docker, создание контейнеров и управление ими.', 43, '2024-11-11 18:28:32', NULL),
 (8, 'Пишем SQL-запросы', 'Гайд по написанию SQL-запросов для начинающих', 'Полное руководство по созданию запросов в SQL: SELECT, JOIN, GROUP BY.', 44, '2024-11-11 18:28:32', NULL),
@@ -56,7 +56,7 @@ INSERT INTO `articles` (`id`, `title`, `summary`, `content`, `author_id`, `creat
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `article_tags`
+-- Table structure for table `article_tags`
 --
 
 CREATE TABLE `article_tags` (
@@ -65,11 +65,12 @@ CREATE TABLE `article_tags` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `article_tags`
+-- Dumping data for table `article_tags`
 --
 
 INSERT INTO `article_tags` (`article_id`, `tag_id`) VALUES
-(1, 1),
+(1, 4),
+(1, 5),
 (1, 6),
 (2, 2),
 (2, 8),
@@ -93,7 +94,7 @@ INSERT INTO `article_tags` (`article_id`, `tag_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `comments`
+-- Table structure for table `comments`
 --
 
 CREATE TABLE `comments` (
@@ -106,28 +107,53 @@ CREATE TABLE `comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `comments`
+-- Dumping data for table `comments`
 --
 
 INSERT INTO `comments` (`id`, `article_id`, `user_id`, `parent_comment_id`, `content`, `created_at`) VALUES
 (21, 3, 1, NULL, 'dsad', '2024-11-16 20:53:21'),
 (22, 3, 1, NULL, 'asd', '2024-11-16 20:53:22'),
 (35, 1, 48, NULL, 'Ты тоже', '2024-11-16 21:30:22'),
-(52, 1, 1, NULL, 'Xsadasd', '2024-11-16 22:22:34'),
-(53, 1, 1, 35, 'ввыв', '2024-11-16 22:26:20'),
 (54, 1, 1, 35, 'тветат', '2024-11-16 22:26:26'),
-(55, 1, 1, 53, 'увйцу', '2024-11-16 22:26:32'),
-(57, 1, 1, 53, 'фыв', '2024-11-16 22:26:55'),
-(58, 1, 1, 53, 'ыфвфывфыфывasdasd', '2024-11-17 08:43:35'),
-(59, 1, 1, 57, 'фвфыв', '2024-11-17 08:43:40'),
-(60, 1, 1, 57, 'фыв', '2024-11-17 08:43:42'),
-(61, 1, 1, 35, 'выфвыфывфы', '2024-11-17 10:30:26'),
-(63, 1, 43, NULL, 'asdasdasdasdxzc', '2024-11-17 16:18:44');
+(78, 1, 1, NULL, 'asdffфывфывфывфыв', '2024-11-26 19:19:30'),
+(81, 1, 45, 54, 'выфв', '2024-11-30 17:54:29'),
+(82, 1, 45, 54, 'фывфыв', '2024-11-30 17:54:32'),
+(83, 1, 45, 54, 'фыв', '2024-11-30 17:54:35'),
+(85, 1, 45, 83, 'фывфыв', '2024-11-30 17:54:41'),
+(86, 1, 45, 83, 'ыфвфывxzcxzc', '2024-11-30 17:54:42'),
+(90, 1, 45, 85, 'вввв', '2024-11-30 17:56:02'),
+(93, 1, 45, 90, 'asdasdasdasddsfdsfdsf', '2024-11-30 18:05:53'),
+(113, 1, 1, 93, 'Комментарий', '2024-11-30 18:55:20'),
+(114, 1, 1, 113, 'Комментарий', '2024-11-30 18:55:22'),
+(115, 1, 1, 114, 'Комментарий', '2024-11-30 18:55:23'),
+(116, 1, 1, 115, '', '2024-11-30 18:55:25'),
+(117, 1, 1, 116, 'Комментарий', '2024-11-30 18:55:27'),
+(118, 1, 1, 117, 'Комментарий', '2024-11-30 18:55:28'),
+(119, 1, 1, 118, 'Комментарий', '2024-11-30 18:55:29'),
+(120, 1, 1, 119, 'Комментарий', '2024-11-30 18:55:31'),
+(121, 1, 1, 120, 'Комментарий', '2024-11-30 18:55:33'),
+(122, 1, 1, 121, 'Комментарий', '2024-11-30 18:55:34'),
+(123, 1, 1, 122, 'Комментарий', '2024-11-30 18:55:36'),
+(124, 1, 1, 123, 'Комментарий', '2024-11-30 18:55:37'),
+(125, 1, 1, 124, 'Комментарий', '2024-11-30 18:55:40'),
+(126, 1, 1, 125, 'Комментарий', '2024-11-30 18:55:41'),
+(127, 1, 1, 126, 'Комментарий', '2024-11-30 18:55:43'),
+(128, 1, 1, 127, 'Комментарий', '2024-11-30 18:55:46'),
+(129, 1, 1, 128, 'Комментарий', '2024-11-30 18:55:47'),
+(130, 1, 1, 129, 'Комментарий', '2024-11-30 18:55:48'),
+(136, 1, 1, NULL, 'const token = Cookies.get(\"auth_token\");\n        try {asdasdasd\n            await updateCommentById(commentId, { content: editingContent }, token);\n            setEditingCommentId(null);\n            fetchComments();\n        } catch (error) {\n            console.error(\"Error editing comment:\", error);\n        }', '2024-11-30 19:32:56'),
+(143, 1, 1, 78, 'ыфвфывфывфыв', '2024-11-30 20:17:06'),
+(144, 1, 1, 143, 'фывфывфы', '2024-11-30 20:17:10'),
+(145, 1, 45, 130, 'dsf', '2024-12-01 09:09:19'),
+(146, 1, 45, 145, 'sdfsdf', '2024-12-01 09:09:20'),
+(147, 1, 45, 146, 'dsf', '2024-12-01 09:09:22'),
+(148, 1, 45, 147, 'sdfdsf', '2024-12-01 09:09:24'),
+(149, 1, 1, 143, 'dsf', '2024-12-03 19:14:39');
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `tags`
+-- Table structure for table `tags`
 --
 
 CREATE TABLE `tags` (
@@ -136,7 +162,7 @@ CREATE TABLE `tags` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `tags`
+-- Dumping data for table `tags`
 --
 
 INSERT INTO `tags` (`id`, `name`) VALUES
@@ -154,7 +180,7 @@ INSERT INTO `tags` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -167,36 +193,36 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Дамп данных таблицы `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `dateRegistration`, `isAdmin`) VALUES
 (1, 'Admin', 'cebotarenkodima@gmail.com', '$2b$10$WWA25AmSE9TOgjd3accXAuI7FsKLcXHNKfVl5IsbCs4kZ5bO8vwbi', '2024-11-12', 1),
 (43, 'Иван Петров', 'ivan.petrov@example.com', '$2b$10$rw8H6ii7Zl6PoVoyEYSe/OLlgJPlVq267DNfT5arJO8EpbIRb2FIC', '2024-11-17', NULL),
 (44, 'Мария Сидорова', 'maria.sidorova@example.com', '$2b$10$j5NhqfRzKQWNXKkX5/HWE.h18kYq1atOVgINxZCtqswzGz4gi7e8G', '2024-11-17', NULL),
-(45, 'Алексей Смирнов', 'alexey.smirnov@example.com', '$2b$10$r84oDvB5mwF2JDoUU/r3CuDyInQ39BRLautCnH6DfTmLEbajS0abC', '2024-11-17', NULL),
+(45, 'Алексей Смирнов', 'alexey.smirnov@example.com', '$2b$10$G8w4YwUNmXMVC8sT3anYq.tSSTY8a./aDygWdq/lSV.Ha6PPU9omW', '2024-11-17', NULL),
 (48, 'Ysell', 'soniaov24@gmail.com', '$2b$10$CGlqa.3626GkrszGjKKIReQAC2bh7y6PwlbTGqbsNGT/1SErxYcBK', '2024-11-17', NULL);
 
 --
--- Индексы сохранённых таблиц
+-- Indexes for dumped tables
 --
 
 --
--- Индексы таблицы `articles`
+-- Indexes for table `articles`
 --
 ALTER TABLE `articles`
   ADD PRIMARY KEY (`id`),
   ADD KEY `author_id` (`author_id`);
 
 --
--- Индексы таблицы `article_tags`
+-- Indexes for table `article_tags`
 --
 ALTER TABLE `article_tags`
   ADD PRIMARY KEY (`article_id`,`tag_id`),
   ADD KEY `tag_id` (`tag_id`);
 
 --
--- Индексы таблицы `comments`
+-- Indexes for table `comments`
 --
 ALTER TABLE `comments`
   ADD PRIMARY KEY (`id`),
@@ -205,65 +231,65 @@ ALTER TABLE `comments`
   ADD KEY `parent_comment_id` (`parent_comment_id`);
 
 --
--- Индексы таблицы `tags`
+-- Indexes for table `tags`
 --
 ALTER TABLE `tags`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- Индексы таблицы `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT для сохранённых таблиц
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT для таблицы `articles`
+-- AUTO_INCREMENT for table `articles`
 --
 ALTER TABLE `articles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT для таблицы `comments`
+-- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
 
 --
--- AUTO_INCREMENT для таблицы `tags`
+-- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT для таблицы `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
--- Ограничения внешнего ключа сохраненных таблиц
+-- Constraints for dumped tables
 --
 
 --
--- Ограничения внешнего ключа таблицы `articles`
+-- Constraints for table `articles`
 --
 ALTER TABLE `articles`
   ADD CONSTRAINT `articles_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `users` (`ID`) ON DELETE SET NULL;
 
 --
--- Ограничения внешнего ключа таблицы `article_tags`
+-- Constraints for table `article_tags`
 --
 ALTER TABLE `article_tags`
   ADD CONSTRAINT `article_tags_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `articles` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `article_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`) ON DELETE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `comments`
+-- Constraints for table `comments`
 --
 ALTER TABLE `comments`
   ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `articles` (`id`) ON DELETE CASCADE,
