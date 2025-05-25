@@ -17,7 +17,7 @@ export default function Header() {
     return (
         <header name="header">
         <div className="d-flex justify-content-between align-items-center p-2">
-            <button className="btn btn-primary me-2 bg-light text-black" onClick={HeaderOnClick}>Блог, гайды... название!</button>
+            <button className="btn btn-primary me-2 bg-light text-black" onClick={HeaderOnClick}>InfoZhur</button>
             <div>
                 {user ? (
                     <div className="d-flex align-items-center">

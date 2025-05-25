@@ -6,3 +6,13 @@ sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '1234';"
 
 # Создание базы данных "InfoZhur"
 sudo -u postgres createdb InfoZhur
+
+# Выполните SQL-запрос, чтобы PostgreSQL начал генерировать id с правильного значения:
+MAX_ID=$(sudo -u postgres psql -d InfoZhur -t -c "SELECT MAX(id) FROM users;")
+NEXT_ID=$((MAX_ID + 1))
+sudo -u postgres psql -d InfoZhur -c "ALTER SEQUENCE users_id_seq RESTART WITH $NEXT_ID;"
+
+# Выполните SQL-запрос, чтобы PostgreSQL начал генерировать id с правильного значения:
+MAX_ID=$(sudo -u postgres psql -d InfoZhur -t -c "SELECT MAX(id) FROM users;")
+NEXT_ID=$((MAX_ID + 1))
+sudo -u postgres psql -d InfoZhur -c "ALTER SEQUENCE users_id_seq RESTART WITH $NEXT_ID;"

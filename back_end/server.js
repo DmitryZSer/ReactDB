@@ -238,7 +238,7 @@ app.post('/articles', async (req, res) => {
   const { title, summary, content, tags } = req.body;
   try {
     const insert = await query(
-      'INSERT INTO articles(title, summary, content) VALUES($1,$2,$3) RETURNING id',
+      'INSERT INTO articles(title, summary, content, created_at, updated_at) VALUES($1,$2,$3, NOW(), NOW()) RETURNING id',
       [title, summary, content]
     );
     const articleId = insert.rows[0].id;
