@@ -1,0 +1,8 @@
+# Установка PostgreSQL
+sudo apt update && sudo apt install postgresql postgresql-contrib
+
+# Смена пароля пользователя postgres (установить 1234)
+sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '1234';" 
+
+# Создание базы данных "InfoZhur"
+sudo -u postgres createdb InfoZhur

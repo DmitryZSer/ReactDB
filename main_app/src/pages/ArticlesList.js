@@ -86,28 +86,23 @@ export default function ArticlesList() {
               (⊙﹏⊙∥) (＠_＠;) (´。＿。｀)
             </p>
           ) : (
-            articles.map((article) => (
-              <div key={article.id} className="col-lg-4 col-md-6 mb-4">
-                <Card className="shadow border-0">
-                  <Card.Img
-                    variant="top"
-                    src={article.image || "https://via.placeholder.com/150"}
-                    alt="Article Thumbnail"
-                  />
-                  <Card.Body>
-                    <Card.Title className="text-truncate">{article.title}</Card.Title>
-                    <Card.Text className="text-muted">{article.summary}</Card.Text>
-                    <Button
-                      name="to-article"
-                      variant="primary"
-                      href={`/articles/${article.id}`}
-                      className="w-100">
-                      Читать статью
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </div>
-            ))
+              articles.map((article) => (
+                <div key={article.id} className="col-lg-4 col-md-6 mb-4">
+                  <a href={`/articles/${article.id}`} className="text-decoration-none">
+                    <Card className="shadow border-0 h-100">
+                      <Card.Img
+                        variant="top"
+                        src={article.image || "https://i.ytimg.com/vi/NTCZobABtmo/maxresdefault.jpg"}
+                        alt="Article Thumbnail"
+                      />
+                      <Card.Body>
+                        <Card.Title className="text-truncate">{article.title}</Card.Title>
+                        <Card.Text className="text-muted">{article.summary}</Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </a>
+                </div>
+              ))
           )}
         </div>
       </div>

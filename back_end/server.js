@@ -1,474 +1,317 @@
+/*
+ PostgreSQL setup:
+ 1. CREATE DATABASE "InfoZhur";
+ 2. CREATE USER postgres WITH PASSWORD '1234';
+ 3. GRANT ALL PRIVILEGES ON DATABASE "InfoZhur" TO postgres;
+*/
+
 const express = require('express');
-const mysql = require('mysql');
+const { Pool } = require('pg');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 
-
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PUT", "DELETE"], 
-    //credentials: true, // Если использовать cookies или авторизацию
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
-
-app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-const dbConfig = {
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "reactdb"
-};
-//CREATE USER 'keycloak'@'localhost' IDENTIFIED BY '';
-//GRANT ALL PRIVILEGES ON keycloakdb.* TO 'keycloak'@'localhost';
-//FLUSH PRIVILEGES;
-
-
-let db;
-
-function handleDisconnect() {
-    db = mysql.createConnection(dbConfig);
-
-    db.connect(function (err) { // The server is either down or restarting (takes a while sometimes).
-        if (err) {
-            console.log('\nError when connecting to db:', err, '\nError when connecting to db.');
-            setTimeout(handleDisconnect, 5000);
-            return;
-        }
-        console.log('Connected to the database.\n');
-    });
-
-    db.on('error', function (err) {
-        console.log('db error', err);
-        handleDisconnect();
-    });
-}
-
-handleDisconnect();
+// PostgreSQL pool configuration
+const pool = new Pool({
+  host: 'localhost',
+  user: 'postgres',
+  password: '1234',
+  database: 'InfoZhur',
+  port: 5432,
+});
 
 const JWT_SECRET = 'zRKIWr7z2uoKrBtUJ2LFceOB-dslR9ZTzHjNghIo5ZY';
 
-// Регистрация пользователя
-app.post('/signup', (req, res) => {
-    const { name, email, password } = req.body;
+// Helper to run queries
+async function query(text, params) {
+  const client = await pool.connect();
+  try {
+    return await client.query(text, params);
+  } finally {
+    client.release();
+  }
+}
 
-    const sqlCheckName = "SELECT * FROM users WHERE name = ?";
-    db.query(sqlCheckName, [name], (err, result) => {
-        if (err) {
-            console.error("Error querying data: ", err);
-            return res.status(500).json({ message: "Internal Server Error (search user by name)", error: err });
-        }
+// User signup
+app.post('/signup', async (req, res) => {
+  const { name, email, password } = req.body;
+  try {
+    const { rows: nameExists } = await query(
+      'SELECT 1 FROM users WHERE name = $1 LIMIT 1',
+      [name]
+    );
+    if (nameExists.length) return res.status(202).json({ message: 'Invalid name' });
 
-        if (result.length > 0) {
-            return res.status(202).json({ message: "Invalid name" });
-        }
+    const { rows: emailExists } = await query(
+      'SELECT 1 FROM users WHERE email = $1 LIMIT 1',
+      [email]
+    );
+    if (emailExists.length) return res.status(201).json({ message: 'Invalid email' });
 
-        const sqlCheckEmail = "SELECT * FROM users WHERE email = ?";
-        db.query(sqlCheckEmail, [email], (err, result) => {
-            if (err) {
-                console.error("Error querying data: ", err);
-                return res.status(500).json({ message: "Internal Server Error (search user by email)", error: err });
-            }
-
-            if (result.length > 0) {
-                return res.status(201).json({ message: "Invalid email" });
-            }
-
-            bcrypt.hash(password, 10, (err, hashedPassword) => {
-                if (err) {
-                    console.error("Error hashing password: ", err);
-                    return res.status(500).json({ message: "Internal Server Error (Error hashing password)", error: err });
-                }
-
-                const sqlInsertUser = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-                db.query(sqlInsertUser, [name, email, hashedPassword], (err, result) => {
-                    if (err) {
-                        console.error("Error inserting data: ", err);
-                        return res.status(500).json({ message: "Internal Server Error (Error inserting data)", error: err });
-                    }
-                    return res.status(200).json({ message: "User registered successfully", data: result });
-                });
-            });
-        });
-    });
+    const hashed = await bcrypt.hash(password, 10);
+    const result = await query(
+      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id',
+      [name, email, hashed]
+    );
+    res.status(200).json({ message: 'User registered successfully', data: result.rows[0] });
+  } catch (err) {
+    console.error('Signup error:', err);
+    res.status(500).json({ message: 'Internal Server Error', error: err.message });
+  }
 });
 
+// User login
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const { rows } = await query('SELECT * FROM users WHERE email = $1', [email]);
+    if (!rows.length) return res.status(400).json({ message: 'Invalid email or password' });
 
+    const user = rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(204).json({ message: 'Invalid email or password' });
 
-// Логин пользователя
-app.post('/login', (req, res) => {
-    const { email, password } = req.body;
-
-    const sql = "SELECT * FROM users WHERE email = ?";
-    db.query(sql, [email], (err, result) => {
-        if (err) {
-            console.error("Error querying data: ", err);
-            return res.status(500).json({ message: "Internal Server Error", error: err });
-        }
-
-        if (result.length === 0) {
-            return res.status(400).json({ message: "Invalid email or password" });
-        }
-
-        const user = result[0];
-
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-            if (err) {
-                console.error("Error comparing passwords: ", err);
-                return res.status(500).json({ message: "Internal Server Error", error: err });
-            }
-
-            if (isMatch) {
-                const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
-
-                //res.cookie('auth_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 3600000 });
-
-                return res.status(200).json({
-                    message: "Login successful",
-                    token: token
-                });
-            } else {
-                return res.status(204).json({ message: "Invalid email or password" });
-            }
-        });
-    });
+    const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ message: 'Login successful', token });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ message: 'Internal Server Error', error: err.message });
+  }
 });
 
-// Изменение пароля пользователя
-app.post('/change-password', (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    const { newPassword } = req.body;
+// Change password
+app.post('/change-password', async (req, res) => {
+  const auth = req.headers.authorization;
+  const { newPassword } = req.body;
+  if (!auth) return res.status(401).json({ message: 'Требуется авторизация' });
 
-    if (!token) {
-        return res.status(401).json({ message: "Требуется авторизация" });
+  try {
+    const token = auth.split(' ')[1];
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await query('UPDATE users SET password = $1 WHERE id = $2', [hashed, decoded.id]);
+    res.status(200).json({ message: 'Пароль успешно изменен' });
+  } catch (err) {
+    console.error('Change-password error:', err);
+    res.status(401).json({ message: err.name === 'JsonWebTokenError' ? 'Неверный токен' : 'Ошибка сервера' });
+  }
+});
+
+// Get tags with articles
+app.get('/tags-with-articles', async (req, res) => {
+  const sql = `
+    SELECT t.id, t.name,
+           a.id AS article_id, a.title, a.summary
+    FROM tags t
+    LEFT JOIN article_tags at ON t.id = at.tag_id
+    LEFT JOIN articles a ON at.article_id = a.id
+    ORDER BY t.name, a.title;
+  `;
+  try {
+    const { rows } = await query(sql);
+    const map = {};
+    rows.forEach(r => {
+      if (!map[r.id]) map[r.id] = { id: r.id, name: r.name, articles: [] };
+      if (r.article_id) map[r.id].articles.push({ id: r.article_id, title: r.title, summary: r.summary });
+    });
+    res.json(Object.values(map));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+// Get tags
+app.get('/tags', async (req, res) => {
+  try {
+    const { rows } = await query('SELECT id, name FROM tags ORDER BY name');
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+// Get all articles
+app.get('/articles', async (req, res) => {
+  const { searchTerm, tagId } = req.query;
+  let sql = `
+    SELECT DISTINCT a.id, a.title, a.summary, a.content
+    FROM articles a
+    LEFT JOIN article_tags at ON a.id = at.article_id
+    WHERE 1=1`;
+  const params = [];
+  if (searchTerm) {
+    sql += ` AND (a.title ILIKE $${params.length+1} OR a.summary ILIKE $${params.length+2} OR a.content ILIKE $${params.length+3})`;
+    const term = `%${searchTerm}%`;
+    params.push(term, term, term);
+  }
+  if (tagId) {
+    sql += ` AND at.tag_id = $${params.length+1}`;
+    params.push(tagId);
+  }
+  try {
+    const { rows } = await query(sql, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+// Get article by id
+app.get('/articles/:id', async (req, res) => {
+  const { id } = req.params;
+  const sql = `
+    SELECT a.id, a.title, a.summary, a.content, a.created_at, a.updated_at,
+           u.name AS authorname,
+           STRING_AGG(t.name, ',') AS tags
+    FROM articles a
+    LEFT JOIN users u ON a.author_id = u.id
+    LEFT JOIN article_tags at ON a.id = at.article_id
+    LEFT JOIN tags t ON at.tag_id = t.id
+    WHERE a.id = $1
+    GROUP BY a.id, u.name;
+  `;
+  try {
+    const { rows } = await query(sql, [id]);
+    if (!rows.length) return res.status(404).json({ message: 'Article not found' });
+    const art = rows[0];
+    art.tags = art.tags ? art.tags.split(',') : [];
+    res.json(art);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+// Update article
+app.put('/articles/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, summary, content, tags } = req.body;
+  try {
+    await query(
+      'UPDATE articles SET title=$1, summary=$2, content=$3, updated_at=NOW() WHERE id=$4',
+      [title, summary, content, id]
+    );
+    await query('DELETE FROM article_tags WHERE article_id=$1', [id]);
+    if (tags && tags.length) {
+      const vals = tags.map((_, i) => `$${i+2}`).join(',');
+      await query(
+        `INSERT INTO article_tags(article_id, tag_id)
+         SELECT $1, id FROM tags WHERE name IN(${vals})`,
+        [id, ...tags]
+      );
     }
+    res.json({ message: 'Article updated' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.id;
+// Delete article
+app.delete('/articles/:id', async (req, res) => {
+  try {
+    const { rowCount } = await query('DELETE FROM articles WHERE id=$1', [req.params.id]);
+    if (!rowCount) return res.status(404).json({ message: 'Статья не найдена' });
+    res.json({ message: 'Статья успешно удалена' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+});
 
-        bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
-            if (err) {
-                return res.status(500).json({ message: "Ошибка хеширования пароля" });
-            }
 
-            const sql = "UPDATE users SET password = ? WHERE id = ?";
-            db.query(sql, [hashedPassword, userId], (err, result) => {
-                if (err) {
-                    return res.status(500).json({ message: "Ошибка при изменении пароля" });
-                }
-                return res.status(200).json({ message: "Пароль успешно изменен" });
-            });
-        });
-    } catch (err) {
-        return res.status(401).json({ message: "Неверный токен" });
+// Create article
+app.post('/articles', async (req, res) => {
+  const { title, summary, content, tags } = req.body;
+  try {
+    const insert = await query(
+      'INSERT INTO articles(title, summary, content) VALUES($1,$2,$3) RETURNING id',
+      [title, summary, content]
+    );
+    const articleId = insert.rows[0].id;
+    if (tags && tags.length) {
+      const vals = tags.map((_, i) => `$${i+2}`).join(',');
+      await query(
+        `INSERT INTO article_tags(article_id, tag_id)
+         SELECT $1, id FROM tags WHERE name IN(${vals})`,
+        [articleId, ...tags]
+      );
     }
+    res.status(201).json({ message: 'Article created', articleId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
-
-// Получение всех тегов cо статьями
-app.get('/tags-with-articles', (req, res) => {
-    const sqlTags = `
-        SELECT t.id, t.name, a.id AS article_id, a.title, a.summary
-        FROM tags t
-        LEFT JOIN article_tags at ON t.id = at.tag_id
-        LEFT JOIN articles a ON at.article_id = a.id
-        ORDER BY t.name, a.title;
-    `;
-
-    db.query(sqlTags, (err, result) => {
-        if (err) {
-            console.error("Error fetching tags and articles: ", err);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-
-        const tagsWithArticles = result.reduce((acc, row) => {
-            const { id, name, article_id, title, summary } = row;
-            if (!acc[id]) acc[id] = { id, name, articles: [] };
-            if (article_id) acc[id].articles.push({ id: article_id, title, summary });
-            return acc;
-        }, {});
-
-        return res.json(Object.values(tagsWithArticles));
-    });
+// Comments
+app.get('/comments/:articleId', async (req, res) => {
+  try {
+    const { rows } = await query(
+      `SELECT c.id, c.content, c.created_at, c.parent_comment_id, u.name AS author
+       FROM comments c
+       JOIN users u ON c.user_id = u.id
+       WHERE c.article_id=$1 ORDER BY c.created_at ASC`,
+      [req.params.articleId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
-// Получение всех тегов
-app.get('/tags', (req, res) => {
-    const sqlTags = `
-        SELECT id, name
-        FROM tags
-        ORDER BY name;
-    `;
-
-    db.query(sqlTags, (err, result) => {
-        if (err) {
-            console.error("Error fetching tags: ", err);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-
-        const tags = result.map(row => ({
-            id: row.id,
-            name: row.name,
-        }));
-
-        return res.json(tags);
-    });
+app.post('/comments', async (req, res) => {
+  const { articleId, userId, parentCommentId, content } = req.body;
+  try {
+    const insert = await query(
+      `INSERT INTO comments(article_id, user_id, parent_comment_id, content)
+       VALUES($1,$2,$3,$4) RETURNING id`,
+      [articleId, userId, parentCommentId || null, content]
+    );
+    res.status(201).json({ message: 'Comment added successfully', commentId: insert.rows[0].id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
-
-// Получение всех статей
-app.get('/articles', (req, res) => {
-    const { searchTerm, tagId } = req.query;
-    let sql = `
-        SELECT DISTINCT a.id, a.title, a.summary, a.content
-        FROM articles a
-        LEFT JOIN article_tags at ON a.id = at.article_id
-        WHERE 1=1
-    `;
-    const params = [];
-
-    if (searchTerm) {
-        sql += ` AND (a.title LIKE ? OR a.summary LIKE ? OR a.content LIKE ?)`;
-        const likeTerm = `%${searchTerm}%`;
-        params.push(likeTerm, likeTerm, likeTerm);
-    }
-
-    if (tagId) {
-        sql += ` AND at.tag_id = ?`;
-        params.push(tagId);
-    }
-
-    db.query(sql, params, (err, results) => {
-        if (err) {
-            console.error("Error fetching articles:", err);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-        res.json(results);
-    });
+app.put('/comments/:id', async (req, res) => {
+  try {
+    const { rowCount } = await query(
+      'UPDATE comments SET content=$1 WHERE id=$2',
+      [req.body.content, req.params.id]
+    );
+    if (!rowCount) return res.status(404).json({ message: 'Комментарий не найден' });
+    res.json({ message: 'Комментарий успешно обновлен' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
 });
 
-// Получение статьи по айди
-app.get('/articles/:id', (req, res) => {
-    const { id } = req.params;
-
-    const sql = `
-        SELECT 
-            a.id, 
-            a.title, 
-            a.summary, 
-            a.content, 
-            a.created_at, 
-            a.updated_at, 
-            u.name AS authorName,
-            GROUP_CONCAT(t.name) AS tags  -- Use GROUP_CONCAT to get all tag names for the article
-        FROM articles a
-        LEFT JOIN users u ON a.author_id = u.id
-        LEFT JOIN article_tags at ON a.id = at.article_id
-        LEFT JOIN tags t ON at.tag_id = t.id
-        WHERE a.id = ?
-        GROUP BY a.id, u.name;
-    `;
-
-    db.query(sql, [id], (err, result) => {
-        if (err) {
-            console.error("Error executing SQL query:", err);
-            return res.status(500).json({ message: "Internal Server Error", error: err });
-        }
-
-        if (result.length === 0) {
-            console.log(`No article found with ID: ${id}`);
-            return res.status(404).json({ message: "Article not found" });
-        }
-
-        const article = result[0];
-        article.tags = article.tags ? article.tags.split(',') : [];  // Все теги через запятую
-
-        res.status(200).json(article);
-    });
+app.delete('/comments/:id', async (req, res) => {
+  try {
+    const { rowCount } = await query('DELETE FROM comments WHERE id=$1', [req.params.id]);
+    if (!rowCount) return res.status(404).json({ message: 'Комментарий не найден' });
+    res.json({ message: 'Комментарий успешно удален' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
 });
 
-// Запрос для обновления существующей статьи
-app.put('/articles/:id', (req, res) => {
-    const { id } = req.params;
-    const { title, summary, content, tags } = req.body;
-
-    const sql = `
-        UPDATE articles 
-        SET title = ?, summary = ?, content = ?, updated_at = NOW() 
-        WHERE id = ?
-    `;
-
-    db.query(sql, [title, summary, content, id], (err, result) => {
-        if (err) {
-            console.error("Error updating article: ", err);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-
-        // Обновляем теги
-        const deleteTagsSql = `DELETE FROM article_tags WHERE article_id = ?`;
-        db.query(deleteTagsSql, [id], (err) => {
-            if (err) console.error("Error deleting old tags: ", err);
-
-            if (tags && tags.length > 0) {
-                const insertTagsSql = `
-                    INSERT INTO article_tags (article_id, tag_id)
-                    SELECT ?, id FROM tags WHERE name IN (?);
-                `;
-                db.query(insertTagsSql, [id, tags], (err) => {
-                    if (err) {
-                        console.error("Error inserting new tags:", err);
-                    }
-                });
-            }
-
-            res.status(200).json({ message: "Article updated" });
-        });
-    });
-});
-
-// Удаление статьи по айди
-app.delete('/articles/:id', (req, res) => {
-    const { id } = req.params;
-
-    const sql = "DELETE FROM articles WHERE id = ?";
-    db.query(sql, [id], (err, result) => {
-        if (err) {
-            console.error("Ошибка при удалении статьи:", err);
-            return res.status(500).json({ message: "Ошибка сервера" });
-        }
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Статья не найдена" });
-        }
-
-        res.status(200).json({ message: "Статья успешно удалена успешно удален" });
-    });
-});
-
-// Запрос для сохранения новой статьи
-app.post('/articles', (req, res) => {
-    const { title, summary, content, tags } = req.body;
-
-    const sql = `
-        INSERT INTO articles (title, summary, content, created_at, updated_at)
-        VALUES (?, ?, ?, NOW(), NOW());
-    `;
-
-    db.query(sql, [title, summary, content], (err, result) => {
-        if (err) {
-            console.error("Error saving article: ", err);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-
-        const articleId = result.insertId;
-        
-        // Добавляем теги к статье
-        if (tags && tags.length > 0) {
-            const tagSql = `
-                INSERT INTO article_tags (article_id, tag_id)
-                SELECT ?, id FROM tags WHERE name IN (?);
-            `;
-            db.query(tagSql, [articleId, tags], (err) => {
-                if (err) {
-                    console.error("Error associating tags with article:", err);
-                }
-            });
-        }
-
-        res.status(201).json({ message: "Article created", articleId });
-    });
-});
-
-// Получение комментариев для статьи
-app.get('/comments/:articleId', (req, res) => {
-    const articleId = req.params.articleId;
-
-    const sql = `
-        SELECT c.id, c.content, c.created_at, c.parent_comment_id, u.name AS author
-        FROM comments c
-        JOIN users u ON c.user_id = u.id
-        WHERE c.article_id = ?
-        ORDER BY c.created_at ASC
-    `;
-
-    db.query(sql, [articleId], (err, results) => {
-        if (err) {
-            console.error("Error fetching comments:", err);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-        res.json(results);
-    });
-});
-
-// Добавление комментария
-app.post('/comments', (req, res) => {
-    const { articleId, userId, parentCommentId, content } = req.body;
-
-    const sql = `
-        INSERT INTO comments (article_id, user_id, parent_comment_id, content)
-        VALUES (?, ?, ?, ?)
-    `;
-
-    db.query(sql, [articleId, userId, parentCommentId || null, content], (err, result) => {
-        if (err) {
-            console.error("Error adding comment:", err);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-        res.status(201).json({ message: "Comment added successfully", commentId: result.insertId });
-    });
-});
-
-
-// Удаление комментария
-app.delete('/comments/:id', (req, res) => {
-    const { id } = req.params;
-
-    const sql = "DELETE FROM comments WHERE id = ?";
-    db.query(sql, [id], (err, result) => {
-        if (err) {
-            console.error("Ошибка при удалении комментария:", err);
-            return res.status(500).json({ message: "Ошибка сервера" });
-        }
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Комментарий не найден" });
-        }
-
-        res.status(200).json({ message: "Комментарий успешно удален" });
-    });
-});
-
-
-// Редактирование комментария
-app.put('/comments/:id', (req, res) => {
-    const { id } = req.params;
-    const { content } = req.body;
-
-    const sql = "UPDATE comments SET content = ? WHERE id = ?";
-    db.query(sql, [content, id], (err, result) => {
-        if (err) {
-            console.error("Ошибка при редактировании комментария:", err);
-            return res.status(500).json({ message: "Ошибка сервера" });
-        }
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Комментарий не найден" });
-        }
-
-        res.status(200).json({ message: "Комментарий успешно обновлен" });
-    });
-});
-
-
-
-
-
-app.listen(8081, () => {
-    console.log("Listening slyshayu...")
-})
+app.listen(8081, () => console.log('Server running on port 8081'));

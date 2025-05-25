@@ -4,3 +4,4 @@
 !/package-lock.json
 !/main_app/node_modules/
 !/main_app/package-lock.json
+!/.idea/
