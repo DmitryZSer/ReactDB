@@ -16,3 +16,10 @@ sudo -u postgres psql -d InfoZhur -c "ALTER SEQUENCE users_id_seq RESTART WITH $
 MAX_ID=$(sudo -u postgres psql -d InfoZhur -t -c "SELECT MAX(id) FROM users;")
 NEXT_ID=$((MAX_ID + 1))
 sudo -u postgres psql -d InfoZhur -c "ALTER SEQUENCE users_id_seq RESTART WITH $NEXT_ID;"
+
+# Подключитесь к PostgreSQL с правами суперпользователя:
+sudo -u postgres psql
+
+# Установите PostgreSQL и создайте пользователя/базу для Keycloak:
+CREATE USER keycloak WITH PASSWORD 'keycloak';
+CREATE DATABASE keycloak OWNER keycloak;
