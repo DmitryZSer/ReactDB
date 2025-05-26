@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ReactDB.iml" filepath="$PROJECT_DIR$/.idea/ReactDB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/InfoZhur.iml" filepath="$PROJECT_DIR$/.idea/InfoZhur.iml" />
     </modules>
   </component>
 </project>

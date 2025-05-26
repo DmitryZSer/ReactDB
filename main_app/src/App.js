@@ -13,21 +13,21 @@ import ArticleEdit from './pages/ArticleEdit';
 
 function App() {
   return (
-    <AuthProvider>
-    <BrowserRouter>
-    <Header></Header>
-      <Routes>
-        <Route path='/' element={<ArticlesList></ArticlesList>}></Route>
-        <Route path="/articles/:id" element={<ArticleView />} />
-        <Route path='/Login' element={<Login></Login>}></Route>
-        <Route path='/SignUp' element={<SignUp></SignUp>}></Route>
-        <Route path='/Profile' element={<Profile></Profile>}></Route>
-        <Route path='/Home' element={<Home></Home>}></Route>
-        <Route path='/articles/:id/edit' element={<ArticleEdit></ArticleEdit>}></Route>
-        <Route path='/articles/new' element={<ArticleEdit></ArticleEdit>}></Route>
-      </Routes>
-    </BrowserRouter>
-    </AuthProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Header></Header>
+          <Routes>
+            <Route path='/' element={<ArticlesList></ArticlesList>}></Route>
+            <Route path="/articles/:id" element={<ArticleView />} />
+            <Route path='/Login' element={<Login></Login>}></Route>
+            <Route path='/SignUp' element={<SignUp></SignUp>}></Route>
+            <Route path='/Profile' element={<Profile></Profile>}></Route>
+            <Route path='/Home' element={<Home></Home>}></Route>
+            <Route path='/articles/:id/edit' element={<ArticleEdit></ArticleEdit>}></Route>
+            <Route path='/articles/new' element={<ArticleEdit></ArticleEdit>}></Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
   );
 }
 

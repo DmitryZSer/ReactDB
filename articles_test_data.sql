@@ -24,7 +24,6 @@ CREATE TABLE users (
     email             VARCHAR(100) NOT NULL UNIQUE,
     password          VARCHAR(1000) NOT NULL,
     date_registration DATE NOT NULL DEFAULT CURRENT_DATE,
-    is_admin          BOOLEAN NOT NULL DEFAULT FALSE,
     role_id           INTEGER NOT NULL DEFAULT 3  -- по умолчанию "Пользователь"
 );
 
