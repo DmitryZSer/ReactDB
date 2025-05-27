@@ -1,38 +1,57 @@
+// pages/components/Header.js
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../modules/AuthContex';
+import { KeycloakContext } from '../../modules/KeycloakContext';
+import React, { useContext } from 'react';
 
 export default function Header() {
-    const { user, logout } = useAuth();
+    const { keycloak } = useContext(KeycloakContext);
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        logout();
+        keycloak.logout(); // Выход через Keycloak
         navigate('/');
     };
 
-    function HeaderOnClick () {
+    const handleLogin = () => {
+        keycloak.login(); // Вход через Keycloak
+    };
+
+    const handleRegister = () => {
+        keycloak.register(); // Регистрация через Keycloak
+    };
+
+    const handleProfile = () => {
+        keycloak.accountManagement(); // Переход к управлению аккаунтом через Keycloak
+    };
+
+    function HeaderOnClick() {
         navigate('/');
     }
 
     return (
         <header name="header">
-        <div className="d-flex justify-content-between align-items-center p-2">
-            <button className="btn btn-primary me-2 bg-light text-black" onClick={HeaderOnClick}>InfoZhur</button>
-            <div>
-                {user ? (
-                    <div className="d-flex align-items-center">
-                        <span name="user-profile-name" className="me-3">Пользователь: {user.name}</span>
-                        <Link to="/Profile" className="btn btn-primary me-2">Профиль</Link>
-                        <button onClick={handleLogout} className="btn btn-secondary">Выйти</button>
-                    </div>
-                ) : (
-                    <div>
-                        <Link to="/Login" className="btn btn-primary me-2">Войти</Link>
-                        <Link to="/SignUp" className="btn btn-success">Регистрация</Link>
-                    </div>
-                )}
+            <div className="d-flex justify-content-between align-items-center p-2">
+                <button className="btn btn-primary me-2 bg-light text-black" onClick={HeaderOnClick}>
+                    InfoZhur
+                </button>
+                <div>
+                    {keycloak?.authenticated ? (
+                        <div className="d-flex align-items-center">
+                            {/* Отображение имени пользователя из токена */}
+                            <span name="user-profile-name" className="me-3">
+                                Пользователь: {keycloak.tokenParsed?.preferred_username || 'User'}
+                            </span>
+                            <button onClick={handleProfile} className="btn btn-primary me-2">Профиль</button>
+                            <button onClick={handleLogout} className="btn btn-secondary">Выйти</button>
+                        </div>
+                    ) : (
+                        <div>
+                            <button onClick={handleLogin} className="btn btn-primary me-2">Войти</button>
+                            <button onClick={handleRegister} className="btn btn-success">Регистрация</button>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
         </header>
     );
 }

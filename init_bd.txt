@@ -43,3 +43,13 @@ CREATE DATABASE keycloak OWNER keycloak;
 
 #keycloak start
 ./kc.sh start-dev
+
+admin
+XH?*iAe4hc#GB4g
+
+export KEYCLOAK_ADMIN=admin
+export KEYCLOAK_ADMIN_PASSWORD=XH?*iAe4hc#GB4g
+
+./bin/kc.sh start-dev
+
+sudo -E ./bin/kc.sh start-dev

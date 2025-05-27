@@ -11,9 +11,10 @@ import Header from './pages/components/Header';
 import Profile from './pages/Profile';
 import ArticleEdit from './pages/ArticleEdit';
 
+import { KeycloakProvider} from "./modules/KeycloakContext";
+
 function App() {
   return (
-      <AuthProvider>
         <BrowserRouter>
           <Header></Header>
           <Routes>
@@ -27,7 +28,6 @@ function App() {
             <Route path='/articles/new' element={<ArticleEdit></ArticleEdit>}></Route>
           </Routes>
         </BrowserRouter>
-      </AuthProvider>
   );
 }
 

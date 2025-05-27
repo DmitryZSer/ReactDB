@@ -1,0 +1,267 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+
+
+/* .comment {
+  margin-left: 20px;
+  padding-left: 10px;
+  border-left: 1px solid #ccc;
+}
+
+.comment-depth-10 {
+  margin-left: 0;
+  padding-left: 0;
+  font-style: italic;
+  color: gray;
+} */
+
+.reply-button {
+  background: none;
+  border: none;
+  color: blue;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  opacity: 0.8;
+  text-decoration: none;
+}
+
+.reply-button:hover {
+  color: blue;
+  text-decoration: none;
+  opacity: 1;
+}
+
+page-container {
+  margin-top: 80px; /* Сдвиг вниз на высоту хедера */
+  height: calc(100vh - 60px); /* Учитываем высоту хедера */
+  overflow-y: auto; /* Скроллинг при необходимости */
+}
+
+.page-container {
+  margin-top: 60px; /* Сдвиг вниз на высоту хедера */
+  height: calc(100vh - 60px); /* Учитываем высоту хедера */
+  overflow-y: auto; /* Скроллинг при необходимости */
+}
+
+.max-height-container {
+  height: calc(100vh - 103px); 
+}
+
+/* ArticleEdit */
+.article-edit-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.article-edit-title {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+}
+
+.loading-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.article-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.form-label {
+  font-weight: bold;
+  color: #555;
+}
+
+.form-input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.form-input:focus {
+  border-color: #007bff;
+}
+
+.save-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  max-width: 250px;
+}
+
+.save-button:disabled {
+  background-color: #ccc;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.article-edit-page {
+  display: flex;
+  flex-direction: row;
+  /* min-height: 100vh; */
+}
+
+.sidebar {
+  flex: 0 0 20%;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.editor {
+  flex: 1;
+  padding: 0px;
+  background-color: #fff;
+}
+
+
+
+/*Header*//*Header*//*Header*//*Header*//*Header*/
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000; 
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+}
+
+header button,
+header a {
+  margin: 0 5px;
+}
+
+
+/*ArticlesListArticlesListArticlesListArticlesListArticlesList*/
+.articles-list-container {
+  min-height: 100vh;
+}
+
+.page-container {
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  border: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.card img {
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
