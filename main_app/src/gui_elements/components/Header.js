@@ -1,6 +1,6 @@
-// pages/components/Header.js
-import { Link, useNavigate } from 'react-router-dom';
-import { KeycloakContext } from '../../modules/KeycloakContext';
+// gui_elements/components/Header.js
+import { useNavigate } from 'react-router-dom';
+import { KeycloakContext } from '../../components/auth/KeycloakContext';
 import React, { useContext } from 'react';
 
 export default function Header() {
@@ -29,7 +29,7 @@ export default function Header() {
     }
 
     return (
-        <header name="header">
+        <header id="header">
             <div className="d-flex justify-content-between align-items-center p-2">
                 <button className="btn btn-primary me-2 bg-light text-black" onClick={HeaderOnClick}>
                     InfoZhur
@@ -38,7 +38,7 @@ export default function Header() {
                     {keycloak?.authenticated ? (
                         <div className="d-flex align-items-center">
                             {/* Отображение имени пользователя из токена */}
-                            <span name="user-profile-name" className="me-3">
+                            <span id="user-profile-name" className="me-3">
                                 Пользователь: {keycloak.tokenParsed?.preferred_username || 'User'}
                             </span>
                             <button onClick={handleProfile} className="btn btn-primary me-2">Профиль</button>

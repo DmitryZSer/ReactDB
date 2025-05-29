@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Dropdown, DropdownButton, Form, Card, Button } from "react-bootstrap";
-import { getArticlesParameters, getTagsWithArticles } from "../modules/Api";
+import { Dropdown, DropdownButton, Form, Card} from "react-bootstrap";
+import { getArticlesParameters, getTagsWithArticles } from "../components/Api";
 import { Link } from 'react-router-dom';
+import { useAuthorization} from "../components/auth/useAuthorization";
 
 export default function ArticlesList() {
   const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState(null);
   const [articles, setArticles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const { userHasRole } = useAuthorization();
 
   useEffect(() => {
     const fetchTagsWithArticles = async () => {
@@ -52,9 +54,11 @@ export default function ArticlesList() {
     <div className="articles-list-container d-flex flex-column bg-primary">
       <div className="page-container container p-5 bg-white rounded shadow-lg" style={{ width: "100%", maxWidth: "1200px" }}>
         {/* <h2 className="mb-4 text-center text-primary">Все статьи</h2> */}
-        <Link to={`/articles/new`} className="btn btn-success mb-4">
-          Создать новую статью
-        </Link>
+        {userHasRole(['administrator', 'creator']) && (
+            <Link to={`/articles/new`} className="btn btn-success mb-4">
+              Создать новую статью
+            </Link>
+        )}
         <div className="d-flex align-items-center mb-4">
           <Form.Control
             name="main-search"
@@ -93,7 +97,7 @@ export default function ArticlesList() {
                     <Card className="shadow border-0 h-100">
                       <Card.Img
                         variant="top"
-                        src={article.image || "https://i.ytimg.com/vi/NTCZobABtmo/maxresdefault.jpg"}
+                        src={article.image || "https://i.pinimg.com/originals/5f/33/7e/5f337e1720f3e44992e5ca5dde77ab8b.jpg"}
                         alt="Article Thumbnail"
                       />
                       <Card.Body>

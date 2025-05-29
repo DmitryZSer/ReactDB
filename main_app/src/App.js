@@ -1,12 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import ArticlesList from './pages/ArticlesList';
-import ArticleView from './pages/ArticleView';
-import Header from './pages/components/Header';
-import ArticleEdit from './pages/ArticleEdit';
-
-import { KeycloakProvider} from "./modules/KeycloakContext";
+import ArticlesList from './gui_elements/ArticlesList';
+import ArticleView from './gui_elements/ArticleView';
+import Header from './gui_elements/components/Header';
+import ArticleEdit from './gui_elements/ArticleEdit';
+import {PrivateRoute} from "./components/auth/PrivateRoute";
 
 function App() {
   return (
@@ -19,8 +18,10 @@ function App() {
             {/*<Route path='/SignUp' element={<SignUp></SignUp>}></Route>*/}
             {/*<Route path='/Profile' element={<Profile></Profile>}></Route>*/}
             {/*<Route path='/Home' element={<Home></Home>}></Route>*/}
-            <Route path='/articles/:id/edit' element={<ArticleEdit></ArticleEdit>}></Route>
-            <Route path='/articles/new' element={<ArticleEdit></ArticleEdit>}></Route>
+            <Route path='/articles/new' element={<PrivateRoute element={<ArticleEdit/>} roles={['administrator', 'creator']}/>}/>
+            <Route path='/articles/:id/edit' element={<PrivateRoute element={<ArticleEdit/>} roles={['administrator', 'creator']}/>}/>
+
+            <Route path='*' element={<ArticlesList></ArticlesList>}></Route>
           </Routes>
         </BrowserRouter>
   );

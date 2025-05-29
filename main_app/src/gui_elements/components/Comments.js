@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { postComment, deleteCommentById, getCommentsByArticleId, putCommentById } from "../../modules/Api";
+import { postComment, deleteCommentById, getCommentsByArticleId, putCommentById } from "../../components/Api";
+import {useAuthorization} from "../../components/auth/useAuthorization";
 
 export default function Comments({ articleId }) {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [replyTo, setReplyTo] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(false);
     const [editingCommentId, setUpdateCommentId] = useState(null);
     const [updateContent, setUpdateContent] = useState("");
+    const { userHasRole } = useAuthorization();
 
     const replyInputRef = useRef(null);
 
     useEffect(() => {
         fetchComments();
-        checkAdminStatus();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -28,13 +28,6 @@ export default function Comments({ articleId }) {
         }
     };
 
-    const checkAdminStatus = () => {
-        const token = Cookies.get("auth_token");
-        if (!token) return;
-
-        const decoded = jwtDecode(token);
-        setIsAdmin(decoded.id === 1); // Проверка прав администратора
-    };
 
     const handleAddComment = async () => {
         const token = Cookies.get("auth_token");
@@ -138,7 +131,7 @@ export default function Comments({ articleId }) {
                             >
                                 Ответить
                             </button>
-                            {isAdmin && (
+                            {userHasRole(['administrator', 'moderator']) && (
                                 <>
                                     <button
                                         className="btn btn-sm btn-danger ms-2"

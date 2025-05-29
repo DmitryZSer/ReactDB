@@ -6,7 +6,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "katex/dist/katex.min.css";
 import "highlight.js/lib/common";
-import { getArticleById, postArticle, putArticleById } from "../modules/Api";
+import { getArticleById, postArticle, putArticleById } from "../components/Api";
 
 const ArticleEdit = () => {
   const { id } = useParams();

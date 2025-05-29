@@ -6,18 +6,19 @@ import { Link } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
-import { deleteArticleById, getArticleById } from '../modules/Api';
+import { deleteArticleById, getArticleById } from '../components/Api';
 import Comments from './components/Comments';
 
 import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.bubble.css";
 import "katex/dist/katex.min.css";
-import "highlight.js/lib/common"; // Импорт базовых языков
+import "highlight.js/lib/common";
+import {useAuthorization} from "../components/auth/useAuthorization"; // Импорт базовых языков
 
 function ArticleView() {
     const { id } = useParams();
     const [article, setArticle] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(false);
+    const { userHasRole } = useAuthorization();
 
     const navigate = useNavigate()
 
@@ -33,21 +34,12 @@ function ArticleView() {
             }
         };
         fetchArticle();
-        checkAdminStatus();
     }, [id]);
 
     const [isPressed, setIsPressed] = useState(false);
 
     const handleClick = () => {
         setIsPressed(!isPressed);
-    };
-
-    const checkAdminStatus = () => {
-        const token = Cookies.get("auth_token");
-        if (!token) return;
-
-        const decoded = jwtDecode(token);
-        setIsAdmin(decoded.id === 1); // Проверка прав администратора
     };
 
     const handleDeleteArticle = async () => {
@@ -113,7 +105,7 @@ function ArticleView() {
                             }}
                         />
                     </button>
-                    {isAdmin && (
+                    {userHasRole(['administrator', 'creator(его статья)']) && (
                         <>
                             <Link
                                 name="edit-article"
