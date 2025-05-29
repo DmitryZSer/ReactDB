@@ -8,6 +8,8 @@ import {KeycloakProvider} from "./modules/KeycloakContext";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <KeycloakProvider>
-        <App />
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>
     </KeycloakProvider>
 );

@@ -38,8 +38,23 @@ const KeycloakProvider = ({ children }) => {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div style={{
+                backgroundColor: 'black',
+                color: 'white',
+                height: '100vh',
+                width: '100vw',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: 0,
+                padding: 0
+            }}>
+                Loading...
+            </div>
+        );
     }
+
 
     return (
         <KeycloakContext.Provider value={{ keycloak, authenticated }}>

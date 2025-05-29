@@ -53,3 +53,12 @@ export KEYCLOAK_ADMIN_PASSWORD=XH?*iAe4hc#GB4g
 ./bin/kc.sh start-dev
 
 sudo -E ./bin/kc.sh start-dev
+
+
+группы пользователей (В keycloak уже добавил, Role Mappings  для каждой группы тоже), как это лучше оформить и всторить в код
+Administration
+---Moderators (Право на редактирование и удаление комментариев под статьями)
+---Administrators (Права модераторов, +право на редактирование статей)
+---SEO (Права на все)
+Creators (создание и редактирование (своих статей))
+Users (обычный пользователь без особых прав)

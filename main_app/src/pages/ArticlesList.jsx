@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Dropdown, DropdownButton, Form, Card, Button } from "react-bootstrap";
 import { getArticlesParameters, getTagsWithArticles } from "../modules/Api";
+import { Link } from 'react-router-dom';
 
 export default function ArticlesList() {
   const [tags, setTags] = useState([]);
@@ -51,9 +52,9 @@ export default function ArticlesList() {
     <div className="articles-list-container d-flex flex-column bg-primary">
       <div className="page-container container p-5 bg-white rounded shadow-lg" style={{ width: "100%", maxWidth: "1200px" }}>
         {/* <h2 className="mb-4 text-center text-primary">Все статьи</h2> */}
-        <Button className="btn btn-success mb-4" href={`/articles/new`}>
+        <Link to={`/articles/new`} className="btn btn-success mb-4">
           Создать новую статью
-        </Button>
+        </Link>
         <div className="d-flex align-items-center mb-4">
           <Form.Control
             name="main-search"
@@ -88,7 +89,7 @@ export default function ArticlesList() {
           ) : (
               articles.map((article) => (
                 <div key={article.id} className="col-lg-4 col-md-6 mb-4">
-                  <a href={`/articles/${article.id}`} className="text-decoration-none">
+                  <Link to={`/articles/${article.id}`} className="text-decoration-none">
                     <Card className="shadow border-0 h-100">
                       <Card.Img
                         variant="top"
@@ -100,7 +101,7 @@ export default function ArticlesList() {
                         <Card.Text className="text-muted">{article.summary}</Card.Text>
                       </Card.Body>
                     </Card>
-                  </a>
+                  </Link>
                 </div>
               ))
           )}
