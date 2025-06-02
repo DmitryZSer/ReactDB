@@ -29,16 +29,16 @@ CREATE DATABASE keycloak OWNER keycloak;
 
 #/ReactDB/keycloak-26.2.4/conf/keycloak.conf
 # The database vendor.
-#db=postgres
+db=postgres
 
 # The username of the database user.
-#db-username=keycloak
+db-username=keycloak
 
 # The password of the database user.
-#db-password=keycloak
+db-password=keycloak
 
 # The full database JDBC URL. If not provided, a default URL is set based on the selected database vendor.
-#db-url=jdbc:postgresql://localhost:5432/keycloak
+db-url=jdbc:postgresql://localhost:5432/keycloak
 
 
 #keycloak start
@@ -48,3 +48,13 @@ admin
 XH?*iAe4hc#GB4g
 
 ![img.png](imgs/img.png)
+
+
+
+Группы пользователей (В keycloak уже добавил, Role Mappings  для каждой группы тоже), как это лучше оформить и всторить в код
+Administration
+---Moderators (Право на редактирование и удаление комментариев под статьями)
+---Administrators (Права модераторов, +право на редактирование статей)
+---SEO (Права на все)
+Creators (создание и редактирование (своих статей))
+Users (обычный пользователь без особых прав)

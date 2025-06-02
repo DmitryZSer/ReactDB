@@ -131,7 +131,7 @@ export default function Comments({ articleId }) {
                             >
                                 Ответить
                             </button>
-                            {userHasRole(['administrator', 'moderator']) && (
+                            {userHasRole(['Administrator', 'Moderator']) && (
                                 <>
                                     <button
                                         className="btn btn-sm btn-danger ms-2"

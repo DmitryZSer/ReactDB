@@ -18,8 +18,8 @@ function App() {
             {/*<Route path='/SignUp' element={<SignUp></SignUp>}></Route>*/}
             {/*<Route path='/Profile' element={<Profile></Profile>}></Route>*/}
             {/*<Route path='/Home' element={<Home></Home>}></Route>*/}
-            <Route path='/articles/new' element={<PrivateRoute element={<ArticleEdit/>} roles={['administrator', 'creator']}/>}/>
-            <Route path='/articles/:id/edit' element={<PrivateRoute element={<ArticleEdit/>} roles={['administrator', 'creator']}/>}/>
+            <Route path='/articles/new' element={<PrivateRoute element={<ArticleEdit/>} roles={['Administrator', 'Creator']}/>}/>
+            <Route path='/articles/:id/edit' element={<PrivateRoute element={<ArticleEdit/>} roles={['Administrator', 'Creator']}/>}/>
 
             <Route path='*' element={<ArticlesList></ArticlesList>}></Route>
           </Routes>

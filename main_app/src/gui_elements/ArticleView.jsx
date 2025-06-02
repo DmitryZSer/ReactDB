@@ -105,7 +105,7 @@ function ArticleView() {
                             }}
                         />
                     </button>
-                    {userHasRole(['administrator', 'creator(его статья)']) && (
+                    {userHasRole(['Administrator', 'Creator(его статья)']) && (
                         <>
                             <Link
                                 name="edit-article"

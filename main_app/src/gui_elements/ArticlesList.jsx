@@ -54,7 +54,7 @@ export default function ArticlesList() {
     <div className="articles-list-container d-flex flex-column bg-primary">
       <div className="page-container container p-5 bg-white rounded shadow-lg" style={{ width: "100%", maxWidth: "1200px" }}>
         {/* <h2 className="mb-4 text-center text-primary">Все статьи</h2> */}
-        {userHasRole(['administrator', 'creator']) && (
+        {userHasRole(['Administrator', 'Creator']) && (
             <Link to={`/articles/new`} className="btn btn-success mb-4">
               Создать новую статью
             </Link>
