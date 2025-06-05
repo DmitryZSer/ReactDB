@@ -3,19 +3,19 @@ import { Image } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
-import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
-
-import { deleteArticleById, getArticleById } from '../components/Api';
 import Comments from './components/Comments';
 
 import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.bubble.css";
 import "katex/dist/katex.min.css";
 import "highlight.js/lib/common";
-import {useAuthorization} from "../components/auth/useAuthorization"; // Импорт базовых языков
+
+import {useAuthorization} from "../components/auth/useAuthorization";
+import {useApi} from "../components/requests/useApi";
 
 function ArticleView() {
+    const { getArticleById, deleteArticleById } = useApi();
+
     const { id } = useParams();
     const [article, setArticle] = useState(null);
     const { userHasRole } = useAuthorization();

@@ -30,8 +30,6 @@ const pool = new Pool({
   port: 5432,
 });
 
-const JWT_SECRET = 'zRKIWr7z2uoKrBtUJ2LFceOB-dslR9ZTzHjNghIo5ZY';
-
 // Helper to run queries
 async function query(text, params) {
   const client = await pool.connect();
@@ -42,70 +40,6 @@ async function query(text, params) {
   }
 }
 
-// User signup
-app.post('/signup', async (req, res) => {
-  const { name, email, password } = req.body;
-  try {
-    const { rows: nameExists } = await query(
-      'SELECT 1 FROM users WHERE name = $1 LIMIT 1',
-      [name]
-    );
-    if (nameExists.length) return res.status(202).json({ message: 'Invalid name' });
-
-    const { rows: emailExists } = await query(
-      'SELECT 1 FROM users WHERE email = $1 LIMIT 1',
-      [email]
-    );
-    if (emailExists.length) return res.status(201).json({ message: 'Invalid email' });
-
-    const hashed = await bcrypt.hash(password, 10);
-    const result = await query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id',
-      [name, email, hashed]
-    );
-    res.status(200).json({ message: 'User registered successfully', data: result.rows[0] });
-  } catch (err) {
-    console.error('Signup error:', err);
-    res.status(500).json({ message: 'Internal Server Error', error: err.message });
-  }
-});
-
-// User login
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const { rows } = await query('SELECT * FROM users WHERE email = $1', [email]);
-    if (!rows.length) return res.status(400).json({ message: 'Invalid email or password' });
-
-    const user = rows[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(204).json({ message: 'Invalid email or password' });
-
-    const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ message: 'Login successful', token });
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Internal Server Error', error: err.message });
-  }
-});
-
-// Change password
-app.post('/change-password', async (req, res) => {
-  const auth = req.headers.authorization;
-  const { newPassword } = req.body;
-  if (!auth) return res.status(401).json({ message: 'Требуется авторизация' });
-
-  try {
-    const token = auth.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const hashed = await bcrypt.hash(newPassword, 10);
-    await query('UPDATE users SET password = $1 WHERE id = $2', [hashed, decoded.id]);
-    res.status(200).json({ message: 'Пароль успешно изменен' });
-  } catch (err) {
-    console.error('Change-password error:', err);
-    res.status(401).json({ message: err.name === 'JsonWebTokenError' ? 'Неверный токен' : 'Ошибка сервера' });
-  }
-});
 
 // Get tags with articles
 app.get('/tags-with-articles', async (req, res) => {

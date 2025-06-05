@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
-import { postComment, deleteCommentById, getCommentsByArticleId, putCommentById } from "../../components/Api";
+import React, {useState, useEffect, useRef, useContext} from "react";
 import {useAuthorization} from "../../components/auth/useAuthorization";
+import {KeycloakContext} from "../../components/auth/KeycloakContext";
+import {useApi} from "../../components/requests/useApi";
 
 export default function Comments({ articleId }) {
+    const { getCommentsByArticleId, postComment, deleteCommentById, putCommentById } = useApi();
+
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [replyTo, setReplyTo] = useState(null);
     const [editingCommentId, setUpdateCommentId] = useState(null);
     const [updateContent, setUpdateContent] = useState("");
     const { userHasRole } = useAuthorization();
+
+    const { authenticated, user_id } = useContext(KeycloakContext);
 
     const replyInputRef = useRef(null);
 
@@ -22,7 +25,7 @@ export default function Comments({ articleId }) {
     const fetchComments = async () => {
         try {
             const response = await getCommentsByArticleId(articleId);
-            setComments(response.data);
+            setComments(response);
         } catch (error) {
             console.error("Error fetching comments:", error);
         }
@@ -30,15 +33,12 @@ export default function Comments({ articleId }) {
 
 
     const handleAddComment = async () => {
-        const token = Cookies.get("auth_token");
-        if (!token) return alert("Вы должны быть авторизованы для добавления комментариев.");
-
-        const decoded = jwtDecode(token);
+        if (!authenticated) return alert("Вы должны быть авторизованы для добавления комментариев.");
 
         try {
             await postComment({
                 articleId,
-                userId: decoded.id,
+                userId: user_id,
                 parentCommentId: replyTo,
                 content: newComment,
             });
@@ -62,9 +62,8 @@ export default function Comments({ articleId }) {
     };
 
     const handleUpdateComment = async (commentId) => {
-        const token = Cookies.get("auth_token");
         try {
-            await putCommentById(commentId, { content: updateContent }, token);
+            await putCommentById(commentId, { content: updateContent });
             setUpdateCommentId(null);
             fetchComments();
         } catch (error) {

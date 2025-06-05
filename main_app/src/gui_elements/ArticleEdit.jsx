@@ -6,11 +6,12 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "katex/dist/katex.min.css";
 import "highlight.js/lib/common";
-import { getArticleById, postArticle, putArticleById } from "../components/Api";
+import {useApi} from "../components/requests/useApi";
 
 const ArticleEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { getArticleById, putArticleById, postArticle, getAllTags } = useApi();
 
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
@@ -21,9 +22,15 @@ const ArticleEdit = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:8081/tags")
-      .then(response => setAllTags(response.data))
-      .catch(error => console.error("Error fetching tags:", error));
+    const fetchTags = async () => {
+      try {
+        const response = await getAllTags();
+        setAllTags(response);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+    fetchTags();
   }, []);
 
   useEffect(() => {
@@ -91,7 +98,7 @@ const ArticleEdit = () => {
       container: [
         [{ font: [] }],
         [{ size: ["small", false, "large", "huge"] }],
-        [{ header: 1 }, { header: 2 },], // {header: [1, 2, 6, false]}, 
+        [{ header: 1 }, { header: 2 },], // {header: [1, 2, 6, false]},
         ["bold", "italic", "underline", "strike"],
         [{ color: [] }, { background: [] }],
         ["blockquote", "code-block"],

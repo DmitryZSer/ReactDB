@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Dropdown, DropdownButton, Form, Card} from "react-bootstrap";
-import { getArticlesParameters, getTagsWithArticles } from "../components/Api";
+import { useApi} from "../components/requests/useApi";
 import { Link } from 'react-router-dom';
 import { useAuthorization} from "../components/auth/useAuthorization";
 
 export default function ArticlesList() {
+  const { userHasRole } = useAuthorization();
+  const {
+    getTagsWithArticles,
+    getArticlesParameters,
+  } = useApi();
+
+
   const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState(null);
   const [articles, setArticles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const { userHasRole } = useAuthorization();
+
 
   useEffect(() => {
     const fetchTagsWithArticles = async () => {
@@ -43,11 +50,11 @@ export default function ArticlesList() {
 
   if (!articles)
     return (
-      <div className="d-flex flex-column min-vh-100 bg-light">
-        <p className="container p-5 bg-white rounded shadow-lg text-center">
-          Какая-то проблема с базой данных ಥ_ಥ
-        </p>
-      </div>
+        <div className="d-flex flex-column min-vh-100 bg-light">
+          <p className="container p-5 bg-white rounded shadow-lg text-center">
+            Какая-то проблема с базой данных ಥ_ಥ
+          </p>
+        </div>
     );
 
   return (
